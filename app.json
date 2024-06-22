@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "HelloWorld",
-    "slug": "expo-template-default",
+    "name": "novelize",
+    "slug": "novelize",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -13,13 +13,15 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.michaelnouwens.novelize"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.michaelnouwens.novelize"
     },
     "web": {
       "bundler": "metro",
@@ -31,6 +33,18 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "df8a3873-6b2d-43f1-be87-30e948cf7621"
+      }
+    },
+    "owner": "michaelnouwens",
+    "updates": {
+      "url": "https://u.expo.dev/df8a3873-6b2d-43f1-be87-30e948cf7621"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }
