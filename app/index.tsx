@@ -1,5 +1,7 @@
 import { Text, View } from "react-native";
 
+import { SearchBar } from "@/components/SearchBar";
+
 export default function Index() {
   return (
     <View
@@ -7,9 +9,10 @@ export default function Index() {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: "#ffffff",
       }}
     >
-      <Text>Cleanup 🧹</Text>
+      <SearchBar />
     </View>
   );
 }
