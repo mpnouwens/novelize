@@ -1,14 +1,45 @@
 import {
+  Animated,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Text,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
 
+import { LogoSvg } from "@/assets/svgs/LogoSvg";
 import { SearchBar } from "@/components/SearchBar";
 
 export default function Index() {
+  const content = (
+    <Animated.View
+      style={{
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <LogoSvg
+        height={35}
+        style={{
+          marginBottom: 10,
+        }}
+      />
+      <Text
+        style={{
+          fontSize: 18,
+          fontWeight: "bold",
+          marginBottom: 30,
+          fontFamily: "Avenir",
+          textAlign: "center",
+        }}
+      >
+        {`Uncover the Story,\nSkip the Fluff`}
+      </Text>
+      <SearchBar />
+    </Animated.View>
+  );
+
   return (
     <View
       style={{
@@ -19,7 +50,7 @@ export default function Index() {
       }}
     >
       {Platform.OS === "web" ? (
-        <SearchBar />
+        content
       ) : (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <KeyboardAvoidingView
@@ -30,7 +61,7 @@ export default function Index() {
               alignItems: "center",
             }}
           >
-            <SearchBar />
+            {content}
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
       )}
