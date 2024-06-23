@@ -11,6 +11,7 @@ import {
 import { LogoSvg } from "@/assets/svgs/LogoSvg";
 import React from "react";
 import { SearchBar } from "@/components/SearchBar";
+import appConfig from "../app.json";
 
 export default function Home() {
   const content = (
@@ -38,6 +39,15 @@ export default function Home() {
         {`Uncover the Story,\nSkip the Fluff`}
       </Text>
       <SearchBar />
+      <Text
+        style={{
+          fontSize: 12,
+          color: "#888",
+          marginTop: 10,
+        }}
+      >
+        v{appConfig.expo.version}
+      </Text>
     </Animated.View>
   );
 
