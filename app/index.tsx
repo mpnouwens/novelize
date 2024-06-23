@@ -9,9 +9,10 @@ import {
 } from "react-native";
 
 import { LogoSvg } from "@/assets/svgs/LogoSvg";
+import React from "react";
 import { SearchBar } from "@/components/SearchBar";
 
-export default function Index() {
+export default function Home() {
   const content = (
     <Animated.View
       style={{
