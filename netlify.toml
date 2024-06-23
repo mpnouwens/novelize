@@ -1,0 +1,19 @@
+[build]
+command = "npx expo export"
+functions = "netlify/functions"
+publish = "dist"
+
+[[redirects]]
+from = "/*"
+to = "/.netlify/functions/server"
+status = 404
+
+[functions]
+included_files = ["dist/server/**/*"]
+
+[[headers]]
+for = "/dist/server/_expo/functions/*"
+[headers.values]
+Access-Control-Allow-Origin = "*"
+Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+Access-Control-Allow-Headers = "Content-Type"
