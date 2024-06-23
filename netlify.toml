@@ -9,11 +9,11 @@ to = "/.netlify/functions/server"
 status = 404
 
 [functions]
+# Include everything to ensure dynamic routes can be used.
 included_files = ["dist/server/**/*"]
 
 [[headers]]
 for = "/dist/server/_expo/functions/*"
 [headers.values]
-Access-Control-Allow-Origin = "*"
-Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
-Access-Control-Allow-Headers = "Content-Type"
+# Set to 60 seconds as an example.
+"Cache-Control" = "public, max-age=60, s-maxage=60"
