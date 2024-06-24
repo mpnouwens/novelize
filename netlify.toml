@@ -1,5 +1,5 @@
 [build]
-command = "npx expo export"
+command = "npx expo export -p web"
 functions = "netlify/functions"
 publish = "dist"
 
@@ -9,11 +9,9 @@ to = "/.netlify/functions/server"
 status = 404
 
 [functions]
-# Include everything to ensure dynamic routes can be used.
-included_files = ["dist/server/**/*"]
+included_files = ["dist/**/*"]
 
 [[headers]]
-for = "/dist/server/_expo/functions/*"
+for = "/dist/_expo/functions/*"
 [headers.values]
-# Set to 60 seconds as an example.
 "Cache-Control" = "public, max-age=60, s-maxage=60"

@@ -4,8 +4,6 @@ export async function GET(
   request: Request,
   { search }: Record<string, string>
 ) {
-  console.log("search parameter:", search);
-  console.log("API Key:", process.env.EXPO_GOOGLE_BOOKS_API_KEY);
   try {
     const response = await axios.get(
       "https://www.googleapis.com/books/v1/volumes",
@@ -22,8 +20,6 @@ export async function GET(
     });
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error("Axios error: ", error.message);
-      console.log("Axios error response: ", error.response);
       if (error.response) {
         console.error("Data: ", error.response.data);
         console.error("Status: ", error.response.status);

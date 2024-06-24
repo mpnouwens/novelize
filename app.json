@@ -2,7 +2,7 @@
   "expo": {
     "name": "novelize",
     "slug": "novelize",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -25,17 +25,10 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
+      "output": "server",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": [
-      [
-        "expo-router",
-        {
-          "origin": "https://novelize.netlify.app/"
-        }
-      ]
-    ],
+    "plugins": [["expo-router", { "origin": "https://novelize.netlify.app" }]],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true

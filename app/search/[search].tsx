@@ -1,27 +1,16 @@
-import {
-  QueryClient,
-  QueryClientProvider,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-
+import React from "react";
 import { SafeAreaView } from "react-native";
 import { SearchBar } from "@/components/SearchBar";
-import axios from "axios";
+import { fetchSearchResults } from "@/utils/fetchResults";
 import { useLocalSearchParams } from "expo-router";
-
-const fetchSearchResults = async (search: string) => {
-  const response = await axios.get(`/search/api/${search}`);
-  return response.data;
-};
+import { useQuery } from "@tanstack/react-query";
 
 export default function Search() {
   const { search } = useLocalSearchParams();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["searchResults"],
-    queryFn: async () => await fetchSearchResults(search?.toString() || ""),
+    queryKey: ["searchResults", search],
+    queryFn: () => fetchSearchResults(search?.toString() || ""),
   });
 
   console.log("search", search);

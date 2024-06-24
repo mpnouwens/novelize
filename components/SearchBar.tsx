@@ -1,9 +1,9 @@
 import {
   Keyboard,
   Platform,
+  Pressable,
   StyleSheet,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import React, { FC, useState } from "react";
@@ -57,7 +57,7 @@ const SearchBar: FC<SearchBarProps> = ({ defaultValue }) => {
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
       />
-      <TouchableOpacity onPress={onPress} style={styles.searchButton}>
+      <Pressable onPress={onPress} style={styles.searchButton}>
         <SearchSvg
           height={24}
           width={24}
@@ -66,7 +66,7 @@ const SearchBar: FC<SearchBarProps> = ({ defaultValue }) => {
             alignSelf: "center",
           }}
         />
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };
