@@ -34,6 +34,7 @@ const Button: FC<ButtonProps> = ({
       {type === "text" && title && (
         <Text
           style={{
+            fontFamily: "Open Sans",
             color,
             textAlign: "center",
             fontSize: 16,

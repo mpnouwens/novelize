@@ -5,10 +5,10 @@ import Svg, { Path, SvgProps } from "react-native-svg";
 function BookmarkOutlineSvg(props: SvgProps) {
   return (
     <Svg
-      fill={props.color || "none"}
+      fill={"none"}
       viewBox="0 0 24 24"
       strokeWidth={1.5}
-      stroke="currentColor"
+      stroke={props.color || "currentColor"}
       {...props}
     >
       <Path

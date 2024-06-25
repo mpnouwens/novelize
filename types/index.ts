@@ -12,10 +12,11 @@ export type Book = {
     industryIdentifiers: { type: string; identifier: string }[];
     readingModes: { text: boolean; image: boolean };
     pageCount: number;
+    printedPageCount: number;
     printType: string;
     categories: string[];
-    averageRating: number;
-    ratingsCount: number;
+    averageRating?: number;
+    ratingsCount?: number;
     maturityRating: string;
     allowAnonLogging: boolean;
     contentVersion: string;
@@ -23,7 +24,14 @@ export type Book = {
       containsEpubBubbles: boolean;
       containsImageBubbles: boolean;
     };
-    imageLinks: { smallThumbnail: string; thumbnail: string };
+    imageLinks: {
+      smallThumbnail: string;
+      thumbnail: string;
+      small?: string;
+      medium?: string;
+      large?: string;
+      extraLarge?: string;
+    };
     language: string;
     previewLink: string;
     infoLink: string;
@@ -33,6 +41,15 @@ export type Book = {
     country: string;
     saleability: string;
     isEbook: boolean;
+    listPrice?: { amount: number; currencyCode: string };
+    retailPrice?: { amount: number; currencyCode: string };
+    buyLink?: string;
+    offers?: {
+      finskyOfferType: number;
+      listPrice: { amountInMicros: number; currencyCode: string };
+      retailPrice: { amountInMicros: number; currencyCode: string };
+      giftable: boolean;
+    }[];
   };
   accessInfo: {
     country: string;
@@ -40,11 +57,14 @@ export type Book = {
     embeddable: boolean;
     publicDomain: boolean;
     textToSpeechPermission: string;
-    epub: { isAvailable: boolean };
+    epub: { isAvailable: boolean; acsTokenLink?: string };
     pdf: { isAvailable: boolean };
     webReaderLink: string;
     accessViewStatus: string;
     quoteSharingAllowed: boolean;
   };
-  searchInfo: { textSnippet: string };
+  layerInfo?: {
+    layers: { layerId: string; volumeAnnotationsVersion: string }[];
+  };
+  searchInfo?: { textSnippet: string };
 };

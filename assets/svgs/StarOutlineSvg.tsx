@@ -2,13 +2,13 @@ import * as React from "react";
 
 import Svg, { Path, SvgProps } from "react-native-svg";
 
-function StarEmptySvg(props: SvgProps) {
+function StarOutlineSvg(props: SvgProps) {
   return (
     <Svg
-      fill={props.color || "none"}
+      fill={"none"}
       viewBox="0 0 24 24"
       strokeWidth={1.5}
-      stroke="currentColor"
+      stroke={props.color || "currentColor"}
       {...props}
     >
       <Path
@@ -20,4 +20,4 @@ function StarEmptySvg(props: SvgProps) {
   );
 }
 
-export { StarEmptySvg };
+export { StarOutlineSvg };

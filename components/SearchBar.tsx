@@ -43,7 +43,7 @@ const SearchBar: FC<SearchBarProps> = ({ defaultValue }) => {
     <View style={styles.container}>
       <TextInput
         placeholderTextColor="#A9A9A9"
-        placeholder="Search name or ISBN number"
+        placeholder="Search name or ISBN or ID"
         inputMode="search"
         enterKeyHint="search"
         style={[

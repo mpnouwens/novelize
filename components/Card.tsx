@@ -1,56 +1,101 @@
-import { Image, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import React, { FC } from "react";
 
 import { Book } from "../types";
+import { BookmarkOutlineSvg } from "@/assets/svgs/BookmarkOutlineSvg";
+import { StarOutlineSvg } from "@/assets/svgs/StarOutlineSvg";
+import { useRouter } from "expo-router";
 
-const Card: FC<{ book: Book }> = ({ book }) => (
-  <View
-    style={{ maxWidth: 400, maxHeight: 600, overflow: "hidden", margin: 5 }}
-  >
-    <View
-      style={{
-        padding: 10,
-        borderRadius: 15,
-        backgroundColor: "#F7F7F7",
-      }}
+const Card: FC<{ book: Book }> = ({ book }) => {
+  const router = useRouter();
+
+  return (
+    <Pressable
+      onPress={() => router.navigate(`/detail/${book.id}`)}
+      key={book.id}
+      style={{ maxWidth: 400, maxHeight: 600, overflow: "hidden", margin: 5 }}
     >
-      <View style={{ flexDirection: "row" }}>
-        <Image
-          style={{ width: 162, height: 234, borderRadius: 15 }}
-          source={{
-            uri: book?.volumeInfo.imageLinks?.thumbnail
-              ? `${book.volumeInfo.imageLinks.thumbnail}&fife=w400-h600`
-              : "https://via.placeholder.com/150",
+      <View
+        style={{
+          padding: 10,
+          borderRadius: 15,
+          backgroundColor: "#F7F7F7",
+        }}
+      >
+        <View style={{ flexDirection: "row" }}>
+          <Image
+            style={{ width: 162, height: 234, borderRadius: 15 }}
+            source={{
+              uri: book?.volumeInfo.imageLinks?.thumbnail
+                ? `${book.volumeInfo.imageLinks.thumbnail}&fife=w400-h600`
+                : "https://via.placeholder.com/150",
+            }}
+          />
+          <View style={{ flex: 1, flexDirection: "column", marginLeft: 10 }}>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                textAlign: "left",
+                marginBottom: 5,
+              }}
+            >
+              {book?.volumeInfo?.title
+                ? book.volumeInfo.title.length > 50
+                  ? `${book.volumeInfo.title.slice(0, 50)}...`
+                  : book.volumeInfo.title
+                : book.volumeInfo.title || "Title not available"}
+            </Text>
+            <Text style={{ textAlign: "left", marginBottom: 5 }}>
+              <Text style={{ color: "#858585" }}>by</Text>{" "}
+              {book?.volumeInfo.authors?.length > 0
+                ? book.volumeInfo.authors.join(", ")
+                : "Author(s) not available"}
+            </Text>
+            <Text style={{ textAlign: "left" }}>
+              {book?.volumeInfo.description
+                ? book.volumeInfo.description.length > 50
+                  ? `${book.volumeInfo.description.slice(0, 50)}...`
+                  : book.volumeInfo.description
+                : "Description not available"}
+            </Text>
+          </View>
+        </View>
+        <View
+          style={{
+            position: "absolute",
+            bottom: 10,
+            right: 10,
+
+            flexDirection: "row",
+            justifyContent: "flex-end",
           }}
-        />
-        <View style={{ flex: 1, flexDirection: "column", marginLeft: 10 }}>
-          <Text
+        >
+          <Pressable
             style={{
-              fontSize: 20,
-              fontWeight: "bold",
-              textAlign: "left",
-              marginBottom: 5,
+              flexDirection: "row",
+              alignItems: "center",
+              padding: 5,
+              borderRadius: 10,
             }}
           >
-            {book?.volumeInfo?.title || "Title not available"}
-          </Text>
-          <Text style={{ textAlign: "left", marginBottom: 5 }}>
-            <Text style={{ color: "#858585" }}>by</Text>{" "}
-            {book?.volumeInfo.authors?.length > 0
-              ? book.volumeInfo.authors.join(", ")
-              : "Author(s) not available"}
-          </Text>
-          <Text style={{ textAlign: "left" }}>
-            {book?.volumeInfo.description
-              ? book.volumeInfo.description.length > 100
-                ? `${book.volumeInfo.description.slice(0, 50)}...`
-                : book.volumeInfo.description
-              : "Description not available"}
-          </Text>
+            <StarOutlineSvg width={20} height={20} />
+          </Pressable>
+          <Pressable
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              padding: 5,
+              borderRadius: 10,
+              marginLeft: 5,
+            }}
+          >
+            <BookmarkOutlineSvg width={20} height={20} />
+          </Pressable>
         </View>
       </View>
-    </View>
-  </View>
-);
+    </Pressable>
+  );
+};
 
 export { Card };

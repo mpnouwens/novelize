@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
 
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
@@ -17,7 +18,6 @@ import { SearchBar } from "@/components/SearchBar";
 import { fetchSearchResults } from "@/utils/fetchResults";
 import { getNumColumns } from "@/utils/getNumColumns";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useLocalSearchParams } from "expo-router";
 
 export default function Search() {
   const { search } = useLocalSearchParams();
@@ -53,9 +53,13 @@ export default function Search() {
   });
 
   const books = data?.pages.flatMap((page) => page.items) || [];
-  const uniqueBooks = Array.from(new Set(books.map((book) => book.id))).map(
-    (id) => books.find((book) => book.id === id)
+  const uniqueBooks = Array.from(new Set(books.map((book) => book?.id))).map(
+    (id) => books.find((book) => book?.id === id)
   );
+
+  if (uniqueBooks.length === 1) {
+    return router.navigate(`/detail/${uniqueBooks[0]?.id}`);
+  }
 
   const content = <SearchBar defaultValue={search?.toString()} />;
 

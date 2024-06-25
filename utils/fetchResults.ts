@@ -10,5 +10,6 @@ export const fetchSearchResults = async (
       ? `/search/api/${search}?startIndex=${startIndex}`
       : `https://novelize.netlify.app/search/api/${search}?startIndex=${startIndex}`
   );
+
   return response.data;
 };
