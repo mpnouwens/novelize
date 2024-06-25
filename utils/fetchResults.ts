@@ -5,7 +5,6 @@ export const fetchSearchResults = async (
   search: string,
   startIndex: number = 0
 ) => {
-  console.log("startindex", startIndex);
   const response = await axios.get(
     Platform.OS === "web"
       ? `/search/api/${search}?startIndex=${startIndex}`
