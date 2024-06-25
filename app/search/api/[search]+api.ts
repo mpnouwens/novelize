@@ -5,14 +5,12 @@ export async function GET(
   { search }: Record<string, string>
 ) {
   try {
+    const url = new URL(request.url);
+    const startIndex = parseInt(url.searchParams.get("startIndex") || "0");
+    console.log("startIndex", startIndex);
+
     const response = await axios.get(
-      "https://www.googleapis.com/books/v1/volumes",
-      {
-        params: {
-          q: search,
-          key: process.env.EXPO_GOOGLE_BOOKS_API_KEY,
-        },
-      }
+      `https://www.googleapis.com/books/v1/volumes?q=${search}&key=${process.env.EXPO_GOOGLE_BOOKS_API_KEY}&startIndex=${startIndex}&maxResults=20`
     );
 
     return new Response(JSON.stringify(response.data), {
