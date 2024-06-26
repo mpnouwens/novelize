@@ -48,17 +48,68 @@ export default function Search() {
     queryKey: ["searchResults", search],
     queryFn: ({ pageParam = 0 }) =>
       fetchSearchResults(search?.toString() || "", pageParam),
-    getNextPageParam: (lastPage, allPages) => allPages.length * 20,
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage || !lastPage.totalItems || lastPage.totalItems === 0) {
+        return undefined;
+      }
+
+      const totalItems = lastPage.totalItems;
+      const fetchedItems = allPages.reduce(
+        (acc, page) => acc + (page.items ? page.items.length : 0),
+        0
+      );
+
+      return fetchedItems < totalItems ? fetchedItems : undefined;
+    },
     initialPageParam: 0,
   });
 
-  const books = data?.pages.flatMap((page) => page.items) || [];
+  const books = data?.pages.flatMap((page) => page.items || []) || [];
   const uniqueBooks = Array.from(new Set(books.map((book) => book?.id))).map(
     (id) => books.find((book) => book?.id === id)
   );
 
-  if (uniqueBooks.length === 1) {
-    return router.navigate(`/detail/${uniqueBooks[0]?.id}`);
+  useEffect(() => {
+    if (uniqueBooks.length === 1) {
+      router.replace(`/detail/${uniqueBooks[0]?.id}`);
+    }
+  }, [uniqueBooks]);
+
+  if (isLoading || status === "pending")
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#ffffff",
+        }}
+      >
+        <ActivityIndicator size="large" color="#00A3FF" />
+      </SafeAreaView>
+    );
+
+  if (
+    !data ||
+    data.pages.every((page) => !page.items || page.items.length === 0)
+  ) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#ffffff",
+        }}
+      >
+        <Text>No results found</Text>
+        <Button
+          title="Go Back"
+          onPress={() => router.navigate("/")}
+          color="#00A3FF"
+        />
+      </SafeAreaView>
+    );
   }
 
   const content = <SearchBar defaultValue={search?.toString()} />;
@@ -84,65 +135,52 @@ export default function Search() {
         )}
       </View>
 
-      {status === "pending" || isLoading ? (
-        <SafeAreaView
+      {status === "error" && (
+        <View
           style={{
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
-            backgroundColor: "#ffffff",
           }}
         >
-          <ActivityIndicator size="large" color="#00A3FF" />
-        </SafeAreaView>
-      ) : status === "error" ? (
-        <SafeAreaView
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "#ffffff",
-          }}
-        >
-          <Text>Error: {error.message}</Text>
-        </SafeAreaView>
-      ) : (
-        <FlatList
-          key={numColumns}
-          data={uniqueBooks}
-          numColumns={numColumns}
-          keyExtractor={(item, index) => `${item?.id}${index}`}
-          renderItem={({ item }) => (
-            <View
-              style={{
-                flex: 1 / numColumns,
-                alignItems: Platform.OS === "web" ? "center" : undefined,
-              }}
-            >
-              <Card book={item} />
-            </View>
-          )}
-          ListFooterComponent={() => (
-            <>
-              {isFetching && (
-                <View style={{ alignItems: "center", marginVertical: 15 }}>
-                  <ActivityIndicator size="small" color="#00A3FF" />
-                </View>
-              )}
-
-              {!isFetchingNextPage && hasNextPage && (
-                <View style={{ alignItems: "center", marginVertical: 10 }}>
-                  <Button
-                    title="Load More"
-                    onPress={() => fetchNextPage()}
-                    color="#00A3FF"
-                  />
-                </View>
-              )}
-            </>
-          )}
-        />
+          <Text>{error.message}</Text>
+        </View>
       )}
+      <FlatList
+        key={numColumns}
+        data={uniqueBooks}
+        numColumns={numColumns}
+        keyExtractor={(item, index) => `${item?.id}${index}`}
+        renderItem={({ item }) => (
+          <View
+            style={{
+              flex: 1 / numColumns,
+              alignItems: Platform.OS === "web" ? "center" : undefined,
+            }}
+          >
+            <Card book={item} />
+          </View>
+        )}
+        ListFooterComponent={() => (
+          <>
+            {isFetching && (
+              <View style={{ alignItems: "center", marginVertical: 15 }}>
+                <ActivityIndicator size="small" color="#00A3FF" />
+              </View>
+            )}
+
+            {!isFetchingNextPage && hasNextPage && (
+              <View style={{ alignItems: "center", marginVertical: 10 }}>
+                <Button
+                  title="Load More"
+                  onPress={() => fetchNextPage()}
+                  color="#00A3FF"
+                />
+              </View>
+            )}
+          </>
+        )}
+      />
     </SafeAreaView>
   );
 }

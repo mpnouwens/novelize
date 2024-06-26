@@ -1,5 +1,13 @@
-import { Image, Platform, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  Platform,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import React, { useMemo } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { Book } from "@/types";
 import { BookmarkOutlineSvg } from "@/assets/svgs/BookmarkOutlineSvg";
@@ -7,11 +15,11 @@ import { Button } from "@/components/Button";
 import RenderHtml from "react-native-render-html";
 import { StarOutlineSvg } from "@/assets/svgs/StarOutlineSvg";
 import { fetchSingleBook } from "@/utils/fetchSingleBook";
-import { useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 
 const Detail = () => {
   const { id } = useLocalSearchParams();
+  const router = useRouter();
 
   const fetchBookQuery = useMemo(
     () => ({
@@ -23,18 +31,39 @@ const Detail = () => {
     [id]
   );
 
-  const { isLoading, error, data: book } = useQuery<Book>(fetchBookQuery);
+  const {
+    isLoading,
+    error,
+    data: book,
+    refetch,
+  } = useQuery<Book>(fetchBookQuery);
 
   if (isLoading)
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Loading...</Text>
+        <ActivityIndicator size="large" />
       </View>
     );
   if (error)
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text>An error occurred</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "50%",
+            marginTop: 10,
+          }}
+        >
+          <Button color="#00A3FF" onPress={refetch} title="Retry" type="text" />
+          <Button
+            color="#00A3FF"
+            onPress={() => router.navigate("/")}
+            title="Go Home"
+            type="text"
+          />
+        </View>
       </View>
     );
 
@@ -95,17 +124,19 @@ const Detail = () => {
             marginVertical: 10,
           }}
         >
-          <Button
-            color="#8F00FF"
-            title="Purchase"
-            onPress={() => {
-              if (book?.saleInfo?.buyLink) {
-                // TODO: Test mobile and web
-                window.open(book.saleInfo.buyLink, "_blank");
-              }
-            }}
-            type="text"
-          />
+          {book?.saleInfo?.buyLink && (
+            <Button
+              color="#8F00FF"
+              title="Purchase"
+              onPress={() => {
+                if (book?.saleInfo?.buyLink) {
+                  // TODO: Test mobile and web
+                  window.open(book.saleInfo.buyLink, "_blank");
+                }
+              }}
+              type="text"
+            />
+          )}
           <Button
             color="#00A3FF"
             onPress={() => {}}

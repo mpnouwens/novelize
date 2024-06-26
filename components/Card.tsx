@@ -12,7 +12,7 @@ const Card: FC<{ book: Book }> = ({ book }) => {
   return (
     <Pressable
       onPress={() => router.navigate(`/detail/${book.id}`)}
-      key={book.id}
+      key={book?.id}
       style={{ maxWidth: 400, maxHeight: 600, overflow: "hidden", margin: 5 }}
     >
       <View
@@ -44,7 +44,7 @@ const Card: FC<{ book: Book }> = ({ book }) => {
                 ? book.volumeInfo.title.length > 50
                   ? `${book.volumeInfo.title.slice(0, 50)}...`
                   : book.volumeInfo.title
-                : book.volumeInfo.title || "Title not available"}
+                : "Title not available"}
             </Text>
             <Text style={{ textAlign: "left", marginBottom: 5 }}>
               <Text style={{ color: "#858585" }}>by</Text>{" "}
