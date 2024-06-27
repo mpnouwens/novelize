@@ -1,15 +1,12 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
 import { DatabaseProvider } from "@/context/DatabaseContext";
+import { ReactQueryClientProvider } from "@/components/ReactQueryClientProvider";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 
 export default function RootLayout() {
-  const queryClient = new QueryClient();
-
   return (
     <DatabaseProvider>
-      <QueryClientProvider client={queryClient}>
+      <ReactQueryClientProvider>
         <SafeAreaProvider>
           <Stack
             screenOptions={{
@@ -17,7 +14,7 @@ export default function RootLayout() {
             }}
           />
         </SafeAreaProvider>
-      </QueryClientProvider>
+      </ReactQueryClientProvider>
     </DatabaseProvider>
   );
 }
