@@ -9,13 +9,18 @@ import {
 import React, { FC, useState } from "react";
 
 import { SearchSvg } from "@/assets/svgs/SearchSvg";
+import { colorSlugs } from "@/constants/Colors";
 import { useRouter } from "expo-router";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 interface SearchBarProps {
   defaultValue?: string | null | undefined;
 }
 
 const SearchBar: FC<SearchBarProps> = ({ defaultValue }) => {
+  const backgroundColor = useThemeColor({}, colorSlugs.emptyBackground);
+  const color = useThemeColor({}, colorSlugs.text);
+
   const [searchQuery, setSearchQuery] = useState(defaultValue || "");
   const [isFocused, setIsFocused] = useState(false);
   const [error, setError] = useState<boolean>(false);
@@ -50,6 +55,10 @@ const SearchBar: FC<SearchBarProps> = ({ defaultValue }) => {
           styles.textInput,
           isFocused ? styles.textInputFocused : null,
           error && !searchQuery ? styles.textInputError : null,
+          {
+            backgroundColor,
+            color,
+          },
         ]}
         value={searchQuery}
         onChangeText={setSearchQuery}
@@ -79,10 +88,8 @@ const styles = StyleSheet.create({
     width: 350,
   },
   textInput: {
-    color: "#000",
     height: 65,
     width: "100%",
-    backgroundColor: "#F7F7F7",
     paddingLeft: 20,
     paddingRight: "20%",
     paddingVertical: 10,

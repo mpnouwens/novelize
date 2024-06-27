@@ -2,28 +2,64 @@ import {
   ActivityIndicator,
   Dimensions,
   FlatList,
-  Keyboard,
   Platform,
-  SafeAreaView,
   Text,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { GenericColors, colorSlugs } from "@/constants/Colors";
 import React, { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 
+import { BookOutlineSvg } from "@/assets/svgs/BookOutlineSvg";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { HEADER_HEIGHT } from "@/constants";
+import HomeSvg from "@/assets/svgs/HomeSvg";
 import { SearchBar } from "@/components/SearchBar";
+import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
 import { fetchSearchResults } from "@/utils/fetchResults";
 import { getNumColumns } from "@/utils/getNumColumns";
 import { useDatabase } from "@/context/DatabaseContext";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useNavigation } from "@react-navigation/native";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function Search() {
   const { search } = useLocalSearchParams();
   const [numColumns, setNumColumns] = useState(getNumColumns());
   const { getWishLists } = useDatabase();
+  const backgroundColor = useThemeColor({}, colorSlugs.background);
+
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerStyle: {
+        borderBottomWidth: 0,
+        elevation: 0,
+        shadowOpacity: 0,
+        height: HEADER_HEIGHT,
+        backgroundColor,
+      },
+      headerLeft: () => (
+        <Button
+          color={GenericColors.orange}
+          onPress={() => router.replace("/")}
+          svg={<HomeSvg height={24} width={24} color={GenericColors.orange} />}
+        />
+      ),
+      headerTitle: () => <SearchBar defaultValue={search?.toString()} />,
+      headerRight: () => (
+        <Button
+          color={GenericColors.pink}
+          onPress={() => router.replace("/mybooks")}
+          svg={
+            <BookOutlineSvg height={24} width={24} color={GenericColors.pink} />
+          }
+        />
+      ),
+    });
+  });
 
   useEffect(() => {
     const updateColumns = () => {
@@ -88,16 +124,15 @@ export default function Search() {
 
   if (isLoading || status === "pending")
     return (
-      <SafeAreaView
+      <ThemedSafeAreaView
         style={{
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "#ffffff",
         }}
       >
-        <ActivityIndicator size="large" color="#00A3FF" />
-      </SafeAreaView>
+        <ActivityIndicator size="large" color={GenericColors.blue} />
+      </ThemedSafeAreaView>
     );
 
   if (
@@ -105,47 +140,25 @@ export default function Search() {
     data.pages.every((page) => !page.items || page.items.length === 0)
   ) {
     return (
-      <SafeAreaView
+      <ThemedSafeAreaView
         style={{
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "#ffffff",
         }}
       >
         <Text>No results found</Text>
         <Button
           title="Go Back"
           onPress={() => router.navigate("/")}
-          color="#00A3FF"
+          color={GenericColors.blue}
         />
-      </SafeAreaView>
+      </ThemedSafeAreaView>
     );
   }
 
-  const content = <SearchBar defaultValue={search?.toString()} />;
-
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#ffffff" }}>
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          marginVertical: 10,
-        }}
-      >
-        {Platform.OS === "web" ? (
-          content
-        ) : (
-          <TouchableWithoutFeedback
-            onPress={Keyboard.dismiss}
-            accessible={false}
-          >
-            {content}
-          </TouchableWithoutFeedback>
-        )}
-      </View>
-
+    <ThemedSafeAreaView style={{ flex: 1 }}>
       {status === "error" && (
         <View
           style={{
@@ -176,7 +189,7 @@ export default function Search() {
           <>
             {isFetching && (
               <View style={{ alignItems: "center", marginVertical: 15 }}>
-                <ActivityIndicator size="small" color="#00A3FF" />
+                <ActivityIndicator size="small" color={GenericColors.blue} />
               </View>
             )}
 
@@ -185,13 +198,13 @@ export default function Search() {
                 <Button
                   title="Load More"
                   onPress={() => fetchNextPage()}
-                  color="#00A3FF"
+                  color={GenericColors.blue}
                 />
               </View>
             )}
           </>
         )}
       />
-    </SafeAreaView>
+    </ThemedSafeAreaView>
   );
 }

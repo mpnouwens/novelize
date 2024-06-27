@@ -3,17 +3,21 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Text,
   TouchableWithoutFeedback,
-  View,
 } from "react-native";
 
 import { LogoSvg } from "@/assets/svgs/LogoSvg";
 import React from "react";
 import { SearchBar } from "@/components/SearchBar";
-import appConfig from "../app.json";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import appConfig from "../../app.json";
+import { colorSlugs } from "@/constants/Colors";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function Home() {
+  const color = useThemeColor({}, colorSlugs.text);
+
   const content = (
     <Animated.View
       style={{
@@ -22,12 +26,13 @@ export default function Home() {
       }}
     >
       <LogoSvg
+        color={color}
         height={35}
         style={{
           marginBottom: 10,
         }}
       />
-      <Text
+      <ThemedText
         style={{
           fontSize: 18,
           fontWeight: "bold",
@@ -37,9 +42,9 @@ export default function Home() {
         }}
       >
         {`Uncover the Story,\nSkip the Fluff`}
-      </Text>
+      </ThemedText>
       <SearchBar />
-      <Text
+      <ThemedText
         style={{
           fontSize: 12,
           color: "#888",
@@ -47,17 +52,16 @@ export default function Home() {
         }}
       >
         v{appConfig.expo.version}
-      </Text>
+      </ThemedText>
     </Animated.View>
   );
 
   return (
-    <View
+    <ThemedView
       style={{
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#ffffff",
       }}
     >
       {Platform.OS === "web" ? (
@@ -76,6 +80,6 @@ export default function Home() {
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
       )}
-    </View>
+    </ThemedView>
   );
 }

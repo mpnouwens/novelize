@@ -1,5 +1,9 @@
-import { Pressable, Text } from "react-native";
+import { Pressable, StyleProp, ViewStyle } from "react-native";
 import React, { FC } from "react";
+
+import { ThemedText } from "./ThemedText";
+import { colorSlugs } from "@/constants/Colors";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 interface ButtonProps {
   onPress: () => void;
@@ -7,31 +11,35 @@ interface ButtonProps {
   color?: string;
   type?: "text" | "icon";
   svg?: JSX.Element;
+  style?: StyleProp<ViewStyle>;
 }
 
-const Button: FC<ButtonProps> = ({
-  onPress,
-  title,
-  color = "#000000",
-  type = "text",
-  svg,
-}) => {
+const Button: FC<ButtonProps> = ({ onPress, title, color, svg, style }) => {
+  const type = svg ? "icon" : "text";
+  const backgroundColor = useThemeColor({}, colorSlugs.emptyBackground);
+
   return (
     <Pressable
       onPress={onPress}
-      style={{
-        backgroundColor: `${color}25`,
-        paddingVertical: 20,
-        paddingHorizontal: 15,
-        margin: 10,
-        marginHorizontal: 5,
-        borderRadius: 15,
-        flexDirection: "row",
-        alignItems: "center",
-      }}
+      style={[
+        {
+          backgroundColor: color ? `${color}25` : backgroundColor,
+          paddingVertical: 20,
+          paddingHorizontal: 15,
+          justifyContent: "center",
+          margin: 10,
+          marginHorizontal: 5,
+          borderRadius: 15,
+          flexDirection: "row",
+          alignItems: "center",
+          height: svg && 60,
+          width: svg && 60,
+        },
+        style,
+      ]}
     >
       {type === "text" && title && (
-        <Text
+        <ThemedText
           style={{
             fontFamily: "Open Sans",
             color,
@@ -40,7 +48,7 @@ const Button: FC<ButtonProps> = ({
           }}
         >
           {title}
-        </Text>
+        </ThemedText>
       )}
       {type === "icon" && svg}
     </Pressable>

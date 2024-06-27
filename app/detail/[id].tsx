@@ -5,7 +5,9 @@ import {
   ScrollView,
   Text,
   View,
+  useWindowDimensions,
 } from "react-native";
+import { GenericColors, colorSlugs } from "@/constants/Colors";
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
@@ -16,13 +18,20 @@ import { Button } from "@/components/Button";
 import RenderHtml from "react-native-render-html";
 import { StarOutlineSvg } from "@/assets/svgs/StarOutlineSvg";
 import { StarSolidSvg } from "@/assets/svgs/StarSolidSvg";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
 import { fetchSingleBook } from "@/utils/fetchSingleBook";
 import { useDatabase } from "@/context/DatabaseContext";
 import { useQuery } from "@tanstack/react-query";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 const Detail = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const { width } = useWindowDimensions();
+
+  const color = useThemeColor({}, colorSlugs.text);
+
   const {
     addWishList,
     removeWishList,
@@ -95,13 +104,17 @@ const Detail = () => {
 
   if (isLoading)
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <ThemedView
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
         <ActivityIndicator size="large" />
-      </View>
+      </ThemedView>
     );
   if (error)
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <ThemedView
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
         <Text>An error occurred</Text>
         <View
           style={{
@@ -111,15 +124,19 @@ const Detail = () => {
             marginTop: 10,
           }}
         >
-          <Button color="#00A3FF" onPress={refetch} title="Retry" type="text" />
           <Button
-            color="#00A3FF"
-            onPress={() => router.navigate("/")}
-            title="Go Home"
+            color={GenericColors.blue}
+            onPress={refetch}
+            title="Retry"
             type="text"
           />
+          <Button
+            color={GenericColors.yellow}
+            onPress={() => router.navigate("/")}
+            title="Go Home"
+          />
         </View>
-      </View>
+      </ThemedView>
     );
 
   const imageUri =
@@ -128,19 +145,21 @@ const Detail = () => {
     book?.volumeInfo?.imageLinks?.thumbnail ||
     "https://via.placeholder.com/150";
 
+  const sourceDescription = {
+    html: book?.volumeInfo.description || "",
+  };
+
   return (
     <ScrollView
       style={{
         flex: 1,
-        backgroundColor: "#ffffff",
       }}
     >
-      <View
+      <ThemedView
         style={{
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "#ffffff",
           paddingVertical: 20,
         }}
       >
@@ -148,19 +167,19 @@ const Detail = () => {
           source={{ uri: imageUri }}
           style={{ height: 400, width: 300, borderRadius: 15 }}
         />
-        <Text
+        <ThemedText
           style={{
             marginTop: 10,
             fontSize: Platform.OS === "web" ? 30 : 20,
             fontWeight: "bold",
             textAlign: "center",
-            marginBottom: 5,
+            marginVertical: 10,
             fontFamily: "Avenir",
           }}
         >
           {book?.volumeInfo?.title}
-        </Text>
-        <Text
+        </ThemedText>
+        <ThemedText
           style={{
             textAlign: "center",
             marginBottom: 5,
@@ -171,7 +190,7 @@ const Detail = () => {
         >
           <Text style={{ color: "#00000050" }}>by</Text>{" "}
           {book?.volumeInfo?.authors?.join(", ")}
-        </Text>
+        </ThemedText>
 
         <View
           style={{
@@ -181,78 +200,89 @@ const Detail = () => {
         >
           {book?.saleInfo?.buyLink && (
             <Button
-              color="#8F00FF"
+              color={GenericColors.purple}
               title="Purchase"
               onPress={() => {
                 if (book?.saleInfo?.buyLink) {
                   window.open(book.saleInfo.buyLink, "_blank");
                 }
               }}
-              type="text"
             />
           )}
           <Button
-            color="#00A3FF"
+            color={GenericColors.blue}
             onPress={handleAddToReadingGroupPress}
-            type="icon"
             svg={
               isReadingGroup ? (
-                <BookmarkSolidSvg color="#00A3FF" height={24} width={24} />
+                <BookmarkSolidSvg
+                  color={GenericColors.blue}
+                  height={24}
+                  width={24}
+                />
               ) : (
-                <BookmarkOutlineSvg color="#00A3FF" height={24} width={24} />
+                <BookmarkOutlineSvg
+                  color={GenericColors.blue}
+                  height={24}
+                  width={24}
+                />
               )
             }
           />
           <Button
-            color="#19BB29"
+            color={GenericColors.green}
             onPress={handleWishlistPress}
-            type="icon"
             svg={
               isWishlist ? (
-                <StarSolidSvg color="#19BB29" height={24} width={24} />
+                <StarSolidSvg
+                  color={GenericColors.green}
+                  height={24}
+                  width={24}
+                />
               ) : (
-                <StarOutlineSvg color="#19BB29" height={24} width={24} />
+                <StarOutlineSvg
+                  color={GenericColors.green}
+                  height={24}
+                  width={24}
+                />
               )
             }
           />
         </View>
 
-        <View
-          style={{
-            marginHorizontal: 20,
-            marginBottom: 10,
-            maxWidth: 400,
-            alignSelf: "center",
-          }}
-        >
-          <Text
+        {book?.volumeInfo.description && (
+          <View
             style={{
-              fontSize: 20,
-              fontWeight: "bold",
-              textAlign: "left",
+              marginHorizontal: 20,
               marginBottom: 10,
-              fontFamily: "Avenir",
+              maxWidth: 400,
+              alignSelf: "center",
             }}
           >
-            About
-          </Text>
-          <Text
-            style={{
-              textAlign: "left",
-              fontFamily: "Open Sans",
-              fontSize: 14,
-              marginBottom: 10,
-            }}
-          >
-            <RenderHtml
-              source={{
-                html:
-                  book?.volumeInfo?.description || "Description not available.",
+            <ThemedText
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                textAlign: "left",
+                marginBottom: 10,
+                fontFamily: "Avenir",
               }}
+            >
+              About
+            </ThemedText>
+            <RenderHtml
+              defaultTextProps={{
+                style: {
+                  fontSize: 16,
+                  fontFamily: "Open Sans",
+                  color,
+                },
+              }}
+              contentWidth={width}
+              source={sourceDescription}
             />
-          </Text>
-        </View>
-      </View>
+          </View>
+        )}
+      </ThemedView>
     </ScrollView>
   );
 };

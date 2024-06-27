@@ -1,3 +1,4 @@
+import { GenericColors, colorSlugs } from "@/constants/Colors";
 import { Image, Pressable, Text, View } from "react-native";
 import React, { FC, useEffect, useState } from "react";
 
@@ -7,11 +8,17 @@ import { BookmarkSolidSvg } from "@/assets/svgs/BookmarkSolidSvg";
 import { SmallButton } from "@/components/SmallButton";
 import { StarOutlineSvg } from "@/assets/svgs/StarOutlineSvg";
 import { StarSolidSvg } from "@/assets/svgs/StarSolidSvg";
+import { ThemedText } from "./ThemedText";
+import { ThemedView } from "./ThemedView";
 import { useDatabase } from "@/context/DatabaseContext";
 import { useRouter } from "expo-router";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 const Card: FC<{ book: Book }> = ({ book }) => {
   const router = useRouter();
+  const color = useThemeColor({}, colorSlugs.text);
+  const emptyBackground = useThemeColor({}, colorSlugs.emptyBackground);
+
   const [isWishlist, setIsWishlist] = useState(false);
   const [isReadingGroup, setIsReadingGroup] = useState(false);
   const {
@@ -67,7 +74,7 @@ const Card: FC<{ book: Book }> = ({ book }) => {
         style={{
           padding: 10,
           borderRadius: 15,
-          backgroundColor: "#F7F7F7",
+          backgroundColor: emptyBackground,
         }}
       >
         <View style={{ flexDirection: "row" }}>
@@ -80,7 +87,7 @@ const Card: FC<{ book: Book }> = ({ book }) => {
             }}
           />
           <View style={{ flex: 1, flexDirection: "column", marginLeft: 10 }}>
-            <Text
+            <ThemedText
               style={{
                 fontSize: 20,
                 fontWeight: "bold",
@@ -93,20 +100,20 @@ const Card: FC<{ book: Book }> = ({ book }) => {
                   ? `${book.volumeInfo.title.slice(0, 50)}...`
                   : book.volumeInfo.title
                 : "Title not available"}
-            </Text>
-            <Text style={{ textAlign: "left", marginBottom: 5 }}>
-              <Text style={{ color: "#858585" }}>by</Text>{" "}
+            </ThemedText>
+            <ThemedText style={{ textAlign: "left", marginBottom: 5 }}>
+              <ThemedText style={{ color: GenericColors.grey }}>by</ThemedText>{" "}
               {book?.volumeInfo.authors?.length > 0
                 ? book.volumeInfo.authors.join(", ")
                 : "Author(s) not available"}
-            </Text>
-            <Text style={{ textAlign: "left" }}>
+            </ThemedText>
+            <ThemedText style={{ textAlign: "left" }}>
               {book?.volumeInfo.description
                 ? book.volumeInfo.description.length > 50
                   ? `${book.volumeInfo.description.slice(0, 50)}...`
                   : book.volumeInfo.description
                 : "Description not available"}
-            </Text>
+            </ThemedText>
           </View>
         </View>
         <View
@@ -123,9 +130,13 @@ const Card: FC<{ book: Book }> = ({ book }) => {
             onPress={handleWishlistPress}
             svg={
               isWishlist ? (
-                <StarSolidSvg width={20} height={20} color="#19BB29" />
+                <StarSolidSvg
+                  width={20}
+                  height={20}
+                  color={GenericColors.green}
+                />
               ) : (
-                <StarOutlineSvg width={20} height={20} />
+                <StarOutlineSvg width={20} height={20} color={color} />
               )
             }
           />
@@ -134,9 +145,13 @@ const Card: FC<{ book: Book }> = ({ book }) => {
             onPress={handleAddToReadingGroupPress}
             svg={
               isReadingGroup ? (
-                <BookmarkSolidSvg width={20} height={20} color={"#00A3FF"} />
+                <BookmarkSolidSvg
+                  width={20}
+                  height={20}
+                  color={GenericColors.blue}
+                />
               ) : (
-                <BookmarkOutlineSvg width={20} height={20} />
+                <BookmarkOutlineSvg width={20} height={20} color={color} />
               )
             }
           />
