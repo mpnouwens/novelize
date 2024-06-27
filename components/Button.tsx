@@ -5,7 +5,6 @@ interface ButtonProps {
   onPress: () => void;
   title?: string;
   color?: string;
-  bgColor?: string;
   type?: "text" | "icon";
   svg?: JSX.Element;
 }

@@ -17,11 +17,13 @@ import { Card } from "@/components/Card";
 import { SearchBar } from "@/components/SearchBar";
 import { fetchSearchResults } from "@/utils/fetchResults";
 import { getNumColumns } from "@/utils/getNumColumns";
+import { useDatabase } from "@/context/DatabaseContext";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 export default function Search() {
   const { search } = useLocalSearchParams();
   const [numColumns, setNumColumns] = useState(getNumColumns());
+  const { getWishLists } = useDatabase();
 
   useEffect(() => {
     const updateColumns = () => {
@@ -74,6 +76,15 @@ export default function Search() {
       router.replace(`/detail/${uniqueBooks[0]?.id}`);
     }
   }, [uniqueBooks]);
+
+  useEffect(() => {
+    const fetchWishLists = async () => {
+      const wishLists = await getWishLists();
+      console.log({ wishLists });
+    };
+
+    fetchWishLists();
+  }, [getWishLists]);
 
   if (isLoading || status === "pending")
     return (

@@ -68,3 +68,10 @@ export type Book = {
   };
   searchInfo?: { textSnippet: string };
 };
+
+export type SavedBook = {
+  ISBN: string;
+  title: string;
+  authors: string;
+  coverImage: string;
+};

@@ -6,20 +6,75 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { Book } from "@/types";
 import { BookmarkOutlineSvg } from "@/assets/svgs/BookmarkOutlineSvg";
+import { BookmarkSolidSvg } from "@/assets/svgs/BookmarkSolidSvg";
 import { Button } from "@/components/Button";
 import RenderHtml from "react-native-render-html";
 import { StarOutlineSvg } from "@/assets/svgs/StarOutlineSvg";
+import { StarSolidSvg } from "@/assets/svgs/StarSolidSvg";
 import { fetchSingleBook } from "@/utils/fetchSingleBook";
+import { useDatabase } from "@/context/DatabaseContext";
 import { useQuery } from "@tanstack/react-query";
 
 const Detail = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const {
+    addWishList,
+    removeWishList,
+    getWishLists,
+    addReadingGroup,
+    removeReadingGroup,
+    getReadingGroups,
+  } = useDatabase();
+
+  const [isWishlist, setIsWishlist] = useState(false);
+  const [isReadingGroup, setIsReadingGroup] = useState(false);
+
+  useEffect(() => {
+    const checkStatuses = async () => {
+      if (typeof id === "string") {
+        const wishLists = await getWishLists();
+        setIsWishlist(wishLists.some((wish) => wish.ISBN === id));
+
+        const readingGroups = await getReadingGroups();
+        setIsReadingGroup(readingGroups.includes(id));
+      }
+    };
+    checkStatuses();
+  }, [id, getWishLists, getReadingGroups]);
+
+  const handleWishlistPress = async () => {
+    if (typeof id === "string" && book) {
+      if (isWishlist) {
+        await removeWishList(id);
+      } else {
+        const bookData = {
+          ISBN: id,
+          title: book.volumeInfo.title,
+          authors: book.volumeInfo.authors.join(", "),
+          coverImage: book.volumeInfo.imageLinks.thumbnail,
+        };
+        await addWishList(bookData);
+      }
+      setIsWishlist(!isWishlist);
+    }
+  };
+
+  const handleAddToReadingGroupPress = async () => {
+    if (typeof id === "string") {
+      if (isReadingGroup) {
+        await removeReadingGroup(id);
+      } else {
+        await addReadingGroup(id);
+      }
+      setIsReadingGroup(!isReadingGroup);
+    }
+  };
 
   const fetchBookQuery = useMemo(
     () => ({
@@ -130,7 +185,6 @@ const Detail = () => {
               title="Purchase"
               onPress={() => {
                 if (book?.saleInfo?.buyLink) {
-                  // TODO: Test mobile and web
                   window.open(book.saleInfo.buyLink, "_blank");
                 }
               }}
@@ -139,15 +193,27 @@ const Detail = () => {
           )}
           <Button
             color="#00A3FF"
-            onPress={() => {}}
+            onPress={handleAddToReadingGroupPress}
             type="icon"
-            svg={<BookmarkOutlineSvg color="#00A3FF" height={24} width={24} />}
+            svg={
+              isReadingGroup ? (
+                <BookmarkSolidSvg color="#00A3FF" height={24} width={24} />
+              ) : (
+                <BookmarkOutlineSvg color="#00A3FF" height={24} width={24} />
+              )
+            }
           />
           <Button
             color="#19BB29"
-            onPress={() => {}}
+            onPress={handleWishlistPress}
             type="icon"
-            svg={<StarOutlineSvg color="#19BB29" height={24} width={24} />}
+            svg={
+              isWishlist ? (
+                <StarSolidSvg color="#19BB29" height={24} width={24} />
+              ) : (
+                <StarOutlineSvg color="#19BB29" height={24} width={24} />
+              )
+            }
           />
         </View>
 
