@@ -190,7 +190,7 @@ const Detail = () => {
               maxWidth: 300,
             }}
           >
-            <Text style={{ color: "#00000050" }}>by</Text>{" "}
+            <Text style={{ color: `${GenericColors.black}50` }}>by</Text>{" "}
             {book?.volumeInfo?.authors?.join(", ")}
           </ThemedText>
 

@@ -5,6 +5,7 @@ import {
   Platform,
   TouchableWithoutFeedback,
 } from "react-native";
+import { GenericColors, colorSlugs } from "@/constants/Colors";
 
 import { LogoSvg } from "@/assets/svgs/LogoSvg";
 import React from "react";
@@ -12,7 +13,6 @@ import { SearchBar } from "@/components/SearchBar";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import appConfig from "../../app.json";
-import { colorSlugs } from "@/constants/Colors";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function Home() {
@@ -47,7 +47,7 @@ export default function Home() {
       <ThemedText
         style={{
           fontSize: 12,
-          color: "#888",
+          color: GenericColors.grey,
           marginTop: 10,
         }}
       >

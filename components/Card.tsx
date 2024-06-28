@@ -32,7 +32,7 @@ const Card: FC<{ book: Book }> = ({ book }) => {
   useEffect(() => {
     const checkStatuses = async () => {
       const wishLists = await getWishLists();
-      setIsWishlist(wishLists.some((wish) => wish.ISBN === book.id));
+      setIsWishlist(wishLists.some((wish) => wish.id === book.id));
 
       const readingGroups = await getReadingGroups();
       setIsReadingGroup(readingGroups.includes(book.id));
@@ -45,7 +45,7 @@ const Card: FC<{ book: Book }> = ({ book }) => {
       await removeWishList(book.id);
     } else {
       await addWishList({
-        ISBN: book.id,
+        id: book.id,
         title: book.volumeInfo.title,
         authors: book.volumeInfo.authors.join(", "),
         coverImage: book.volumeInfo.imageLinks.thumbnail,

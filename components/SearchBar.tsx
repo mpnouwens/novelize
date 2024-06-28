@@ -193,11 +193,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   textInputError: {
-    borderColor: "#FF000025",
+    borderColor: `${GenericColors.red}25`,
     borderWidth: 1,
     ...Platform.select({
       ios: {
-        shadowColor: "#FF000025",
+        shadowColor: `${GenericColors.red}25`,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 1,
         shadowRadius: 3,
@@ -207,16 +207,16 @@ const styles = StyleSheet.create({
       },
       web: {
         outlineStyle: "none",
-        boxShadow: "0 0 0 1px #FF000025",
+        boxShadow: `0 0 0 1px ${GenericColors.red + "25"}`,
       },
     }),
   },
   textInputFocused: {
-    borderColor: "#00A3FF25",
+    borderColor: `${GenericColors.blue}25`,
     borderWidth: 1,
     ...Platform.select({
       ios: {
-        shadowColor: "#00A3FF25",
+        shadowColor: `${GenericColors.blue}25`,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 1,
         shadowRadius: 3,
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
       },
       web: {
         outlineStyle: "none",
-        boxShadow: "0 0 0 1px #00A3FF25",
+        boxShadow: `0 0 0 1px  ${GenericColors.blue + "25"}`,
       },
     }),
   },
