@@ -41,7 +41,7 @@ export default function Search() {
         borderBottomWidth: 0,
         elevation: 0,
         shadowOpacity: 0,
-        height: 70,
+        height: 80,
         backgroundColor,
       },
       header: () => (

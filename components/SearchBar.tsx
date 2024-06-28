@@ -47,7 +47,6 @@ const SearchBar: FC<SearchBarProps> = ({
     return {
       width: width.value,
       position: header && state === "opened" ? "absolute" : "relative",
-      backgroundColor: header ? backgroundColor : undefined,
       zIndex: state === "opened" ? 1 : 0,
     };
   });

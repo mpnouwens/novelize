@@ -23,7 +23,7 @@ const Button: FC<ButtonProps> = ({ onPress, title, color, svg, style }) => {
       onPress={onPress}
       style={[
         {
-          backgroundColor: color ? `${color}25` : backgroundColor,
+          backgroundColor: color ? `${color}40` : backgroundColor,
           paddingVertical: 20,
           paddingHorizontal: 15,
           justifyContent: "center",
