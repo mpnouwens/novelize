@@ -12,6 +12,7 @@ import { GenericColors } from "@/constants/Colors";
 import { ImageCard } from "@/components/ImageCard";
 import { SavedBook } from "@/types";
 import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
+import { ThemedScrollView } from "@/components/ThemedScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useDatabase } from "@/hooks/useDatabase";
@@ -19,97 +20,115 @@ import { useRouter } from "expo-router";
 
 export default function Books() {
   const router = useRouter();
-  const { getWishLists, getReadingGroups } = useDatabase();
-  const [wishLists, setWishLists] = useState<SavedBook[]>([]);
-  const [readingGroups, setReadingGroups] = useState<string[]>([]);
+  const { getWishList, getReadingGroup } = useDatabase();
+  const [wishList, setWishList] = useState<SavedBook[]>([]);
+  const [readingGroup, setReadingGroup] = useState<SavedBook[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    const loadWishLists = async () => {
-      const storedWishLists = await getWishLists();
-      setWishLists(storedWishLists);
+    const loadBooks = async () => {
+      const storedWishList = await getWishList();
+      const storedReadingGroup = await getReadingGroup();
+      setWishList(storedWishList);
+      setReadingGroup(storedReadingGroup);
+      setLoading(false);
     };
 
-    const loadReadingGroups = async () => {
-      const storedReadingGroups = await getReadingGroups();
-      setReadingGroups(storedReadingGroups);
-    };
-
-    loadWishLists();
-    loadReadingGroups();
-    setLoading(false);
-  }, [getReadingGroups, getWishLists]);
+    loadBooks();
+  }, [getWishList, getReadingGroup]);
 
   if (loading) {
     return (
-      <ThemedSafeAreaView
-        style={{
-          flex: 1,
-          justifyContent: "center",
-        }}
-      >
+      <ThemedSafeAreaView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={GenericColors.blue} />
       </ThemedSafeAreaView>
     );
   }
 
-  const renderItem = ({ item, index }: { item: SavedBook; index: number }) => (
+  const renderItem = ({ item }: { item: SavedBook }) => (
     <ImageCard
-      key={index}
       imageUri={item.coverImage || ""}
       onPress={() => item.id && router.navigate(`/detail/${item.id}`)}
     />
   );
+
   return (
     <ThemedSafeAreaView style={{ flex: 1 }}>
-      {(wishLists && wishLists.length > 0) ||
-      (readingGroups && readingGroups.length > 0) ? (
-        <ThemedView style={styles.container}>
-          <ThemedText style={styles.wishlistHeader}>Wishlist</ThemedText>
-          <FlatList
-            data={wishLists}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          />
-        </ThemedView>
-      ) : (
-        <ThemedView style={styles.emptyContainer}>
-          <Image
-            source={require("../../assets/images/empty.png")}
-            style={styles.emptyImage}
-          />
-          <ThemedText style={styles.emptyText}>
-            {`A new journey begins here!\nStart adding books to your collection.`}
-          </ThemedText>
-          <View style={styles.searchButtonContainer}>
-            <Button
-              title="Search Books"
-              onPress={() => router.navigate("/")}
-              color={GenericColors.blue}
+      <ThemedScrollView style={{ flex: 1 }}>
+        {wishList.length > 0 || readingGroup.length > 0 ? (
+          <ThemedView style={styles.container}>
+            {wishList.length > 0 && (
+              <>
+                <ThemedText style={styles.header}>Wishlist</ThemedText>
+                <FlatList
+                  data={wishList}
+                  renderItem={renderItem}
+                  keyExtractor={(item, index) =>
+                    item?.id?.toString() || index.toString()
+                  }
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.flatListContent}
+                />
+              </>
+            )}
+            {readingGroup.length > 0 && (
+              <>
+                <ThemedText style={styles.header}>Reading Group</ThemedText>
+                <FlatList
+                  data={readingGroup}
+                  renderItem={renderItem}
+                  keyExtractor={(item, index) =>
+                    item?.id?.toString() || index.toString()
+                  }
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.flatListContent}
+                />
+              </>
+            )}
+          </ThemedView>
+        ) : (
+          <ThemedView style={styles.emptyContainer}>
+            <Image
+              source={require("../../assets/images/empty.png")}
+              style={styles.emptyImage}
             />
-          </View>
-        </ThemedView>
-      )}
+            <ThemedText style={styles.emptyText}>
+              {`A new journey begins here!\nStart adding books to your collection.`}
+            </ThemedText>
+            <View style={styles.searchButtonContainer}>
+              <Button
+                title="Search Books"
+                onPress={() => router.navigate("/")}
+                color={GenericColors.blue}
+              />
+            </View>
+          </ThemedView>
+        )}
+      </ThemedScrollView>
     </ThemedSafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  loadingContainer: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  container: {
     padding: 10,
   },
-  wishlistHeader: {
+  header: {
     fontSize: 24,
     fontWeight: "bold",
     fontFamily: "Avenir",
+    marginVertical: 20,
+    paddingVertical: 10,
   },
-  row: {
-    flex: 1,
-    marginBottom: 5,
+  flatListContent: {
+    paddingLeft: 10,
   },
   emptyContainer: {
     flex: 1,

@@ -11,11 +11,11 @@ import { SavedBook } from "@/types";
 
 interface DatabaseContextType {
   addWishList: (book: SavedBook) => Promise<void>;
-  removeWishList: (ISBN: string) => Promise<void>;
-  getWishLists: () => Promise<SavedBook[]>;
-  addReadingGroup: (groupId: string) => Promise<void>;
-  removeReadingGroup: (groupId: string) => Promise<void>;
-  getReadingGroups: () => Promise<string[]>;
+  removeWishList: (id: string) => Promise<void>;
+  getWishList: () => Promise<SavedBook[]>;
+  addReadingGroup: (book: SavedBook) => Promise<void>;
+  removeReadingGroup: (id: string) => Promise<void>;
+  getReadingGroup: () => Promise<SavedBook[]>;
 }
 
 export const DatabaseContext = createContext<DatabaseContextType | undefined>(
@@ -27,7 +27,7 @@ const READING_GROUP_STORAGE_KEY = "readingGroups";
 
 export const DatabaseProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [wishLists, setWishLists] = useState<SavedBook[]>([]);
-  const [readingGroups, setReadingGroups] = useState<string[]>([]);
+  const [readingGroup, setReadingGroup] = useState<SavedBook[]>([]);
 
   useEffect(() => {
     const loadWishLists = async () => {
@@ -37,17 +37,17 @@ export const DatabaseProvider: FC<{ children: ReactNode }> = ({ children }) => {
       }
     };
 
-    const loadReadingGroups = async () => {
-      const storedReadingGroups = await AsyncStorage.getItem(
+    const loadReadingGroup = async () => {
+      const storedReadingGroup = await AsyncStorage.getItem(
         READING_GROUP_STORAGE_KEY
       );
-      if (storedReadingGroups) {
-        setReadingGroups(JSON.parse(storedReadingGroups));
+      if (storedReadingGroup) {
+        setReadingGroup(JSON.parse(storedReadingGroup));
       }
     };
 
     loadWishLists();
-    loadReadingGroups();
+    loadReadingGroup();
   }, []);
 
   const addWishList = async (book: SavedBook) => {
@@ -71,44 +71,43 @@ export const DatabaseProvider: FC<{ children: ReactNode }> = ({ children }) => {
     );
   };
 
-  const getWishLists = async () => {
+  const getWishList = async () => {
     return wishLists;
   };
 
-  const addReadingGroup = async (groupId: string) => {
-    const exists = readingGroups.includes(groupId);
+  const addReadingGroup = async (book: SavedBook) => {
+    const exists = wishLists.some((g) => g.id === book.id);
     if (!exists) {
-      const newReadingGroups = [...readingGroups, groupId];
-      setReadingGroups(newReadingGroups);
+      const newReadingGroup = [...readingGroup, book];
+      setReadingGroup(newReadingGroup);
       await AsyncStorage.setItem(
         READING_GROUP_STORAGE_KEY,
-        JSON.stringify(newReadingGroups)
+        JSON.stringify(newReadingGroup)
       );
     }
   };
 
-  const removeReadingGroup = async (groupId: string) => {
-    const newReadingGroups = readingGroups.filter((group) => group !== groupId);
-    setReadingGroups(newReadingGroups);
+  const removeReadingGroup = async (bookId: string) => {
+    const newReadingGroup = readingGroup.filter((book) => book.id !== bookId);
+    setReadingGroup(newReadingGroup);
     await AsyncStorage.setItem(
       READING_GROUP_STORAGE_KEY,
-      JSON.stringify(newReadingGroups)
+      JSON.stringify(newReadingGroup)
     );
   };
 
-  const getReadingGroups = async () => {
-    return readingGroups;
+  const getReadingGroup = async () => {
+    return readingGroup;
   };
-
   return (
     <DatabaseContext.Provider
       value={{
         addWishList,
         removeWishList,
-        getWishLists,
+        getWishList,
         addReadingGroup,
         removeReadingGroup,
-        getReadingGroups,
+        getReadingGroup,
       }}
     >
       {children}

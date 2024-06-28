@@ -21,7 +21,6 @@ import { SearchBar } from "@/components/SearchBar";
 import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
 import { fetchSearchResults } from "@/utils/fetchResults";
 import { getNumColumns } from "@/utils/getNumColumns";
-import { useDatabase } from "@/hooks/useDatabase";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useNavigation } from "@react-navigation/native";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -29,7 +28,6 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 export default function Search() {
   const { search } = useLocalSearchParams();
   const [numColumns, setNumColumns] = useState(getNumColumns());
-  const { getWishLists } = useDatabase();
   const backgroundColor = useThemeColor({}, colorSlugs.background);
 
   const navigation = useNavigation();
@@ -162,15 +160,6 @@ export default function Search() {
       router.replace(`/detail/${uniqueBooks[0]?.id}`);
     }
   }, [uniqueBooks]);
-
-  useEffect(() => {
-    const fetchWishLists = async () => {
-      const wishLists = await getWishLists();
-      console.log({ wishLists });
-    };
-
-    fetchWishLists();
-  }, [getWishLists]);
 
   if (isLoading || status === "pending")
     return (

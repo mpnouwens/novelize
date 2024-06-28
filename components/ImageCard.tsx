@@ -36,7 +36,11 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageUri, onPress, style }) => {
       ]}
     >
       <Image
-        source={{ uri: imageUri }}
+        source={{
+          uri: imageUri
+            ? `${imageUri}&fife=w400-h600`
+            : "https://via.placeholder.com/150",
+        }}
         style={[
           {
             resizeMode: "contain",

@@ -34,19 +34,20 @@ const SearchBar: FC<SearchBarProps> = ({
   const emptyBackground = useThemeColor({}, colorSlugs.emptyBackground);
   const color = useThemeColor({}, colorSlugs.text);
   const deviceWidth = useWindowDimensions().width;
-  const [currentWidth, setCurrentWidth] = useState(400);
+  const [currentWidth, setCurrentWidth] = useState(
+    Platform.OS === "web" ? 360 : 400
+  );
   const [state, setState] = useState<"opened" | "closed">(
     s ? s : header ? "closed" : "opened"
   );
 
-  console.log('header && state === "closed"', header && state === "closed");
-
   const width = useSharedValue(header ? 60 : currentWidth);
-  const fullHeaderWidth = deviceWidth;
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
       width: width.value,
+      position: header && state === "opened" ? "absolute" : "relative",
+      backgroundColor: header ? backgroundColor : undefined,
       zIndex: state === "opened" ? 1 : 0,
     };
   });
@@ -66,11 +67,11 @@ const SearchBar: FC<SearchBarProps> = ({
 
   useEffect(() => {
     if (header && state === "opened") {
-      width.value = fullHeaderWidth;
+      width.value = deviceWidth;
     } else if (header && state === "closed") {
       width.value = 60;
     }
-  }, [state, header, fullHeaderWidth, width]);
+  }, [state, header, deviceWidth, width]);
 
   const onPress = () => {
     if (state === "opened") {
@@ -97,18 +98,7 @@ const SearchBar: FC<SearchBarProps> = ({
   };
 
   return (
-    <Animated.View
-      style={[
-        styles.container,
-        {
-          width: width.value,
-          position: header && state === "opened" ? "absolute" : "relative",
-          backgroundColor: header ? backgroundColor : undefined,
-          zIndex: state === "opened" ? 1 : 0,
-        },
-        animatedStyle,
-      ]}
-    >
+    <Animated.View style={[styles.container, animatedStyle]}>
       <TextInput
         ref={inputRef}
         placeholderTextColor="#A9A9A9"
@@ -134,7 +124,7 @@ const SearchBar: FC<SearchBarProps> = ({
         onChangeText={setSearchQuery}
         onSubmitEditing={onPress}
         onFocus={() => {
-          setCurrentWidth(header ? fullHeaderWidth : currentWidth);
+          setCurrentWidth(header ? deviceWidth : currentWidth);
           setState(header ? "opened" : state);
           setIsFocused(true);
         }}

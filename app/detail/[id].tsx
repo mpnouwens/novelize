@@ -1,3 +1,5 @@
+import * as Linking from "expo-linking";
+
 import {
   ActivityIndicator,
   Image,
@@ -36,10 +38,10 @@ const Detail = () => {
   const {
     addWishList,
     removeWishList,
-    getWishLists,
+    getWishList,
     addReadingGroup,
     removeReadingGroup,
-    getReadingGroups,
+    getReadingGroup,
   } = useDatabase();
 
   const [isWishlist, setIsWishlist] = useState(false);
@@ -48,15 +50,15 @@ const Detail = () => {
   useEffect(() => {
     const checkStatuses = async () => {
       if (typeof id === "string") {
-        const wishLists = await getWishLists();
+        const wishLists = await getWishList();
         setIsWishlist(wishLists.some((wish) => wish.id === id));
 
-        const readingGroups = await getReadingGroups();
-        setIsReadingGroup(readingGroups.includes(id));
+        const readingGroups = await getReadingGroup();
+        setIsReadingGroup(readingGroups.some((g) => g.id === id));
       }
     };
     checkStatuses();
-  }, [id, getWishLists, getReadingGroups]);
+  }, [id, getWishList, getReadingGroup]);
 
   const handleWishlistPress = async () => {
     if (typeof id === "string" && book) {
@@ -76,11 +78,17 @@ const Detail = () => {
   };
 
   const handleAddToReadingGroupPress = async () => {
-    if (typeof id === "string") {
+    if (typeof id === "string" && book) {
       if (isReadingGroup) {
         await removeReadingGroup(id);
       } else {
-        await addReadingGroup(id);
+        const bookData = {
+          id: id,
+          title: book.volumeInfo.title,
+          authors: book.volumeInfo.authors.join(", "),
+          coverImage: book.volumeInfo.imageLinks.thumbnail,
+        };
+        await addReadingGroup(bookData);
       }
       setIsReadingGroup(!isReadingGroup);
     }
@@ -206,7 +214,7 @@ const Detail = () => {
                 title="Purchase"
                 onPress={() => {
                   if (book?.saleInfo?.buyLink) {
-                    window.open(book.saleInfo.buyLink, "_blank");
+                    Linking.openURL(book.saleInfo.buyLink);
                   }
                 }}
               />

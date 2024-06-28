@@ -23,22 +23,22 @@ const Card: FC<{ book: Book }> = ({ book }) => {
   const {
     addWishList,
     removeWishList,
-    getWishLists,
+    getWishList,
     addReadingGroup,
     removeReadingGroup,
-    getReadingGroups,
+    getReadingGroup,
   } = useDatabase();
 
   useEffect(() => {
     const checkStatuses = async () => {
-      const wishLists = await getWishLists();
+      const wishLists = await getWishList();
       setIsWishlist(wishLists.some((wish) => wish.id === book.id));
 
-      const readingGroups = await getReadingGroups();
-      setIsReadingGroup(readingGroups.includes(book.id));
+      const readingGroups = await getReadingGroup();
+      setIsReadingGroup(readingGroups.some((g) => g.id === book.id));
     };
     checkStatuses();
-  }, [book.id, getWishLists, getReadingGroups]);
+  }, [book.id, getWishList, getReadingGroup]);
 
   const handleWishlistPress = async () => {
     if (isWishlist) {
@@ -58,7 +58,12 @@ const Card: FC<{ book: Book }> = ({ book }) => {
     if (isReadingGroup) {
       await removeReadingGroup(book.id);
     } else {
-      await addReadingGroup(book.id);
+      await addReadingGroup({
+        id: book.id,
+        title: book.volumeInfo.title,
+        authors: book.volumeInfo.authors.join(", "),
+        coverImage: book.volumeInfo.imageLinks.thumbnail,
+      });
     }
     setIsReadingGroup(!isReadingGroup);
   };
