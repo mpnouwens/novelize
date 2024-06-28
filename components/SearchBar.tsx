@@ -30,12 +30,11 @@ const SearchBar: FC<SearchBarProps> = ({
   state: s,
   onStateChange,
 }) => {
-  const backgroundColor = useThemeColor({}, colorSlugs.background);
   const emptyBackground = useThemeColor({}, colorSlugs.emptyBackground);
   const color = useThemeColor({}, colorSlugs.text);
   const deviceWidth = useWindowDimensions().width;
   const [currentWidth, setCurrentWidth] = useState(
-    Platform.OS === "web" ? 360 : 400
+    Platform.OS === "web" ? 370 : 400
   );
   const [state, setState] = useState<"opened" | "closed">(
     s ? s : header ? "closed" : "opened"
@@ -177,7 +176,7 @@ const styles = StyleSheet.create({
   textInput: {
     height: 60,
     width: "60%",
-    paddingLeft: 20,
+    paddingLeft: 15,
     paddingVertical: 10,
     fontSize: 16,
   },

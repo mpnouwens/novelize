@@ -52,6 +52,11 @@ export default function Books() {
     />
   );
 
+  // Filter out books without an ID only
+  // - reason being that there were some books that were saved without an ID
+  const wishListWithIds = wishList.filter((book) => book.id);
+  const readingGroupWithIds = readingGroup.filter((book) => book.id);
+
   return (
     <ThemedSafeAreaView style={{ flex: 1 }}>
       <ThemedScrollView style={{ flex: 1 }}>
@@ -61,7 +66,7 @@ export default function Books() {
               <>
                 <ThemedText style={styles.header}>Wishlist</ThemedText>
                 <FlatList
-                  data={wishList}
+                  data={wishListWithIds}
                   renderItem={renderItem}
                   keyExtractor={(item, index) =>
                     item?.id?.toString() || index.toString()
@@ -76,7 +81,7 @@ export default function Books() {
               <>
                 <ThemedText style={styles.header}>Reading Group</ThemedText>
                 <FlatList
-                  data={readingGroup}
+                  data={readingGroupWithIds}
                   renderItem={renderItem}
                   keyExtractor={(item, index) =>
                     item?.id?.toString() || index.toString()
@@ -124,8 +129,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     fontFamily: "Avenir",
-    marginVertical: 20,
-    paddingVertical: 10,
+    paddingVertical: 5,
   },
   flatListContent: {
     paddingLeft: 10,

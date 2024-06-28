@@ -43,7 +43,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageUri, onPress, style }) => {
         }}
         style={[
           {
-            resizeMode: "contain",
+            resizeMode: "stretch",
           },
           imageSize,
         ]}

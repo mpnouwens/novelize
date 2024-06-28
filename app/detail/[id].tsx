@@ -3,7 +3,6 @@ import * as Linking from "expo-linking";
 import {
   ActivityIndicator,
   Image,
-  Platform,
   StyleSheet,
   Text,
   View,
