@@ -1,5 +1,5 @@
 import { GenericColors, colorSlugs } from "@/constants/Colors";
-import { Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, View } from "react-native";
 import React, { FC, useEffect, useState } from "react";
 
 import { Book } from "../types";
@@ -9,8 +9,7 @@ import { SmallButton } from "@/components/SmallButton";
 import { StarOutlineSvg } from "@/assets/svgs/StarOutlineSvg";
 import { StarSolidSvg } from "@/assets/svgs/StarSolidSvg";
 import { ThemedText } from "./ThemedText";
-import { ThemedView } from "./ThemedView";
-import { useDatabase } from "@/context/DatabaseContext";
+import { useDatabase } from "@/hooks/useDatabase";
 import { useRouter } from "expo-router";
 import { useThemeColor } from "@/hooks/useThemeColor";
 

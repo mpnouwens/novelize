@@ -1,14 +1,91 @@
+import { Image, Pressable, View } from "react-native";
+import React, { useEffect, useState } from "react";
+
 import { Button } from "@/components/Button";
-import { Image } from "react-native";
-import React from "react";
+import { SavedBook } from "@/types";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { useDatabase } from "@/hooks/useDatabase";
 import { useRouter } from "expo-router";
 
 export default function Books() {
   const router = useRouter();
+  const { getWishLists, getReadingGroups } = useDatabase();
+  const [wishLists, setWishLists] = useState<SavedBook[]>([]);
+  const [readingGroups, setReadingGroups] = useState<string[]>([]);
 
-  return (
+  useEffect(() => {
+    const loadWishLists = async () => {
+      const storedWishLists = await getWishLists();
+      setWishLists(storedWishLists);
+    };
+
+    const loadReadingGroups = async () => {
+      const storedReadingGroups = await getReadingGroups();
+      setReadingGroups(storedReadingGroups);
+    };
+
+    loadWishLists();
+    loadReadingGroups();
+  }, [getReadingGroups, getWishLists]);
+
+  return (wishLists && wishLists.length > 0) ||
+    (readingGroups && readingGroups.length > 0) ? (
+    <ThemedView
+      style={{
+        flex: 1,
+        flexDirection: "row",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 10,
+      }}
+    >
+      <ThemedText
+        style={{
+          fontSize: 24,
+          fontWeight: "bold",
+          fontFamily: "Avenir",
+        }}
+      >
+        Wishlist
+      </ThemedText>
+      {wishLists.map((wishList, i) => {
+        return (
+          <Pressable
+            style={{
+              margin: 10,
+              borderRadius: 10,
+              overflow: "hidden",
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.84,
+              elevation: 5,
+            }}
+            key={i}
+            onPress={() => {
+              if (wishList.id) {
+                router.navigate(`/detail/${wishList.id}`);
+              }
+            }}
+          >
+            <Image
+              source={{ uri: wishList.coverImage }}
+              style={{
+                width: 100,
+                height: 150,
+                resizeMode: "contain",
+              }}
+            />
+          </Pressable>
+        );
+      })}
+    </ThemedView>
+  ) : (
     <ThemedView
       style={{
         flex: 1,
@@ -35,7 +112,7 @@ export default function Books() {
       >
         {` A new journey begins here!\nStart adding books to your collection.`}
       </ThemedText>
-      <ThemedView
+      <View
         style={{
           marginTop: 10,
           alignItems: "center",
@@ -48,7 +125,7 @@ export default function Books() {
           }}
           color="#00A3FF"
         />
-      </ThemedView>
+      </View>
     </ThemedView>
   );
 }

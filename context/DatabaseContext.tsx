@@ -2,7 +2,6 @@ import React, {
   FC,
   ReactNode,
   createContext,
-  useContext,
   useEffect,
   useState,
 } from "react";
@@ -19,7 +18,7 @@ interface DatabaseContextType {
   getReadingGroups: () => Promise<string[]>;
 }
 
-const DatabaseContext = createContext<DatabaseContextType | undefined>(
+export const DatabaseContext = createContext<DatabaseContextType | undefined>(
   undefined
 );
 
@@ -52,7 +51,7 @@ export const DatabaseProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   const addWishList = async (book: SavedBook) => {
-    const exists = wishLists.some((wish) => wish.ISBN === book.ISBN);
+    const exists = wishLists.some((wish) => wish.id === book.id);
     if (!exists) {
       const newWishLists = [...wishLists, book];
       setWishLists(newWishLists);
@@ -63,8 +62,8 @@ export const DatabaseProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
-  const removeWishList = async (ISBN: string) => {
-    const newWishLists = wishLists.filter((book) => book.ISBN !== ISBN);
+  const removeWishList = async (id: string) => {
+    const newWishLists = wishLists.filter((book) => book.id !== id);
     setWishLists(newWishLists);
     await AsyncStorage.setItem(
       WISHLIST_STORAGE_KEY,
@@ -115,13 +114,4 @@ export const DatabaseProvider: FC<{ children: ReactNode }> = ({ children }) => {
       {children}
     </DatabaseContext.Provider>
   );
-};
-
-// Custom hook to use the database context
-export const useDatabase = () => {
-  const context = useContext(DatabaseContext);
-  if (context === undefined) {
-    throw new Error("useDatabase must be used within a DatabaseProvider");
-  }
-  return context;
 };

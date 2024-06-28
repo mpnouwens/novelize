@@ -1,52 +1,116 @@
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
+import { GenericColors, colorSlugs } from "@/constants/Colors";
 import {
   Keyboard,
   Platform,
-  Pressable,
   StyleSheet,
   TextInput,
-  View,
+  useWindowDimensions,
 } from "react-native";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 
+import { Button } from "./Button";
 import { SearchSvg } from "@/assets/svgs/SearchSvg";
-import { colorSlugs } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 interface SearchBarProps {
   defaultValue?: string | null | undefined;
+  header?: boolean;
+  state?: "opened" | "closed";
+  onStateChange?: (state: "opened" | "closed") => void;
 }
 
-const SearchBar: FC<SearchBarProps> = ({ defaultValue }) => {
-  const backgroundColor = useThemeColor({}, colorSlugs.emptyBackground);
+const SearchBar: FC<SearchBarProps> = ({
+  defaultValue,
+  header,
+  state: s,
+  onStateChange,
+}) => {
+  const backgroundColor = useThemeColor({}, colorSlugs.background);
+  const emptyBackground = useThemeColor({}, colorSlugs.emptyBackground);
   const color = useThemeColor({}, colorSlugs.text);
+  const deviceWidth = useWindowDimensions().width;
+  const [currentWidth, setCurrentWidth] = useState(400);
+  const [state, setState] = useState<"opened" | "closed">(
+    s ? s : header ? "closed" : "opened"
+  );
+
+  console.log('header && state === "closed"', header && state === "closed");
+
+  const width = useSharedValue(header ? 60 : currentWidth);
+  const fullHeaderWidth = deviceWidth;
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      width: width.value,
+      zIndex: state === "opened" ? 1 : 0,
+    };
+  });
 
   const [searchQuery, setSearchQuery] = useState(defaultValue || "");
   const [isFocused, setIsFocused] = useState(false);
   const [error, setError] = useState<boolean>(false);
   const router = useRouter();
+  const inputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    if (header && state === "opened") {
+      inputRef.current?.focus();
+    }
+    onStateChange && onStateChange(state);
+  }, [header, onStateChange, state]);
+
+  useEffect(() => {
+    if (header && state === "opened") {
+      width.value = fullHeaderWidth;
+    } else if (header && state === "closed") {
+      width.value = 60;
+    }
+  }, [state, header, fullHeaderWidth, width]);
 
   const onPress = () => {
-    const trimmedSearchQuery = searchQuery.trim();
+    if (state === "opened") {
+      const trimmedSearchQuery = searchQuery.trim();
 
-    if (!trimmedSearchQuery) {
-      setError(true);
-      return;
+      if (!trimmedSearchQuery) {
+        setError(true);
+        return;
+      }
+
+      if (Keyboard) Keyboard.dismiss();
+
+      router.navigate({
+        pathname: "/search/[search]",
+        params: {
+          search: trimmedSearchQuery,
+        },
+      });
     }
 
-    if (Keyboard) Keyboard.dismiss();
-
-    router.navigate({
-      pathname: "/search/[search]",
-      params: {
-        search: trimmedSearchQuery,
-      },
-    });
+    if (state === "closed") {
+      setState("opened");
+    }
   };
 
   return (
-    <View style={styles.container}>
+    <Animated.View
+      style={[
+        styles.container,
+        {
+          width: width.value,
+          position: header && state === "opened" ? "absolute" : "relative",
+          backgroundColor: header ? backgroundColor : undefined,
+          zIndex: state === "opened" ? 1 : 0,
+        },
+        animatedStyle,
+      ]}
+    >
       <TextInput
+        ref={inputRef}
         placeholderTextColor="#A9A9A9"
         placeholder="Search name or ISBN or ID"
         inputMode="search"
@@ -56,55 +120,77 @@ const SearchBar: FC<SearchBarProps> = ({ defaultValue }) => {
           isFocused ? styles.textInputFocused : null,
           error && !searchQuery ? styles.textInputError : null,
           {
-            backgroundColor,
+            backgroundColor: emptyBackground,
             color,
+            marginRight: 0,
+            display: header && state === "closed" ? "none" : "flex",
+            borderTopLeftRadius:
+              !header || (header && state === "opened") ? 15 : 0,
+            borderBottomLeftRadius:
+              !header || (header && state === "opened") ? 15 : 0,
           },
         ]}
         value={searchQuery}
         onChangeText={setSearchQuery}
         onSubmitEditing={onPress}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        onFocus={() => {
+          setCurrentWidth(header ? fullHeaderWidth : currentWidth);
+          setState(header ? "opened" : state);
+          setIsFocused(true);
+        }}
+        onBlur={() => {
+          setCurrentWidth(header ? 60 : currentWidth);
+          setState(header ? "closed" : state);
+          setIsFocused(false);
+        }}
       />
-      <Pressable onPress={onPress} style={styles.searchButton}>
-        <SearchSvg
-          height={24}
-          width={24}
-          fill={"#00A3FF"}
-          style={{
-            alignSelf: "center",
-          }}
-        />
-      </Pressable>
-    </View>
+      <Button
+        style={{
+          marginLeft: 0,
+          borderRadius: header && state === "closed" ? 15 : 0,
+          borderTopRightRadius:
+            header && state === "closed"
+              ? 15
+              : !header || (header && state === "opened")
+              ? 15
+              : 0,
+          borderBottomRightRadius:
+            header && state === "closed"
+              ? 15
+              : !header || (header && state === "opened")
+              ? 15
+              : 0,
+        }}
+        color={GenericColors.blue}
+        onPress={onPress}
+        svg={
+          <SearchSvg
+            height={24}
+            width={24}
+            fill={GenericColors.blue}
+            style={{
+              alignSelf: "center",
+            }}
+          />
+        }
+      />
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: "row",
     alignContent: "center",
     alignItems: "center",
     justifyContent: "center",
-    width: 350,
   },
   textInput: {
-    height: 65,
-    width: "100%",
+    height: 60,
+    width: "60%",
     paddingLeft: 20,
-    paddingRight: "20%",
     paddingVertical: 10,
-    borderRadius: 15,
     fontSize: 16,
-  },
-  searchButton: {
-    position: "absolute",
-    backgroundColor: "#00A3FF25",
-    right: 5,
-    height: 56,
-    width: 56,
-    justifyContent: "center",
-    paddingHorizontal: 10,
-    borderRadius: 15,
   },
   textInputError: {
     borderColor: "#FF000025",
@@ -125,7 +211,6 @@ const styles = StyleSheet.create({
       },
     }),
   },
-
   textInputFocused: {
     borderColor: "#00A3FF25",
     borderWidth: 1,

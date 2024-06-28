@@ -2,7 +2,6 @@ import {
   ActivityIndicator,
   Image,
   Platform,
-  ScrollView,
   Text,
   View,
   useWindowDimensions,
@@ -18,10 +17,12 @@ import { Button } from "@/components/Button";
 import RenderHtml from "react-native-render-html";
 import { StarOutlineSvg } from "@/assets/svgs/StarOutlineSvg";
 import { StarSolidSvg } from "@/assets/svgs/StarSolidSvg";
+import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
+import { ThemedScrollView } from "@/components/ThemedScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { fetchSingleBook } from "@/utils/fetchSingleBook";
-import { useDatabase } from "@/context/DatabaseContext";
+import { useDatabase } from "@/hooks/useDatabase";
 import { useQuery } from "@tanstack/react-query";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
@@ -48,7 +49,7 @@ const Detail = () => {
     const checkStatuses = async () => {
       if (typeof id === "string") {
         const wishLists = await getWishLists();
-        setIsWishlist(wishLists.some((wish) => wish.ISBN === id));
+        setIsWishlist(wishLists.some((wish) => wish.id === id));
 
         const readingGroups = await getReadingGroups();
         setIsReadingGroup(readingGroups.includes(id));
@@ -63,7 +64,7 @@ const Detail = () => {
         await removeWishList(id);
       } else {
         const bookData = {
-          ISBN: id,
+          id: id,
           title: book.volumeInfo.title,
           authors: book.volumeInfo.authors.join(", "),
           coverImage: book.volumeInfo.imageLinks.thumbnail,
@@ -150,140 +151,142 @@ const Detail = () => {
   };
 
   return (
-    <ScrollView
+    <ThemedSafeAreaView
       style={{
         flex: 1,
       }}
     >
-      <ThemedView
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          paddingVertical: 20,
-        }}
-      >
-        <Image
-          source={{ uri: imageUri }}
-          style={{ height: 400, width: 300, borderRadius: 15 }}
-        />
-        <ThemedText
+      <ThemedScrollView>
+        <ThemedView
           style={{
-            marginTop: 10,
-            fontSize: Platform.OS === "web" ? 30 : 20,
-            fontWeight: "bold",
-            textAlign: "center",
-            marginVertical: 10,
-            fontFamily: "Avenir",
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            paddingVertical: 20,
           }}
         >
-          {book?.volumeInfo?.title}
-        </ThemedText>
-        <ThemedText
-          style={{
-            textAlign: "center",
-            marginBottom: 5,
-            fontFamily: "Open Sans",
-            fontSize: 20,
-            maxWidth: 300,
-          }}
-        >
-          <Text style={{ color: "#00000050" }}>by</Text>{" "}
-          {book?.volumeInfo?.authors?.join(", ")}
-        </ThemedText>
-
-        <View
-          style={{
-            flexDirection: "row",
-            marginVertical: 10,
-          }}
-        >
-          {book?.saleInfo?.buyLink && (
-            <Button
-              color={GenericColors.purple}
-              title="Purchase"
-              onPress={() => {
-                if (book?.saleInfo?.buyLink) {
-                  window.open(book.saleInfo.buyLink, "_blank");
-                }
-              }}
-            />
-          )}
-          <Button
-            color={GenericColors.blue}
-            onPress={handleAddToReadingGroupPress}
-            svg={
-              isReadingGroup ? (
-                <BookmarkSolidSvg
-                  color={GenericColors.blue}
-                  height={24}
-                  width={24}
-                />
-              ) : (
-                <BookmarkOutlineSvg
-                  color={GenericColors.blue}
-                  height={24}
-                  width={24}
-                />
-              )
-            }
+          <Image
+            source={{ uri: imageUri }}
+            style={{ height: 400, width: 300, borderRadius: 15 }}
           />
-          <Button
-            color={GenericColors.green}
-            onPress={handleWishlistPress}
-            svg={
-              isWishlist ? (
-                <StarSolidSvg
-                  color={GenericColors.green}
-                  height={24}
-                  width={24}
-                />
-              ) : (
-                <StarOutlineSvg
-                  color={GenericColors.green}
-                  height={24}
-                  width={24}
-                />
-              )
-            }
-          />
-        </View>
-
-        {book?.volumeInfo.description && (
-          <View
+          <ThemedText
             style={{
-              marginHorizontal: 20,
-              marginBottom: 10,
-              maxWidth: 400,
-              alignSelf: "center",
+              marginTop: 10,
+              fontSize: Platform.OS === "web" ? 30 : 20,
+              fontWeight: "bold",
+              textAlign: "center",
+              marginVertical: 10,
+              fontFamily: "Avenir",
             }}
           >
-            <ThemedText
-              style={{
-                fontSize: 20,
-                fontWeight: "bold",
-                textAlign: "left",
-                marginBottom: 10,
-                fontFamily: "Avenir",
-              }}
-            >
-              About
-            </ThemedText>
-            <RenderHtml
-              defaultTextProps={{
-                style: {
-                  fontSize: 16,
-                  fontFamily: "Open Sans",
-                  color,
-                },
-              }}
-              contentWidth={width}
-              source={sourceDescription}
+            {book?.volumeInfo?.title}
+          </ThemedText>
+          <ThemedText
+            style={{
+              textAlign: "center",
+              marginBottom: 5,
+              fontFamily: "Open Sans",
+              fontSize: 20,
+              maxWidth: 300,
+            }}
+          >
+            <Text style={{ color: "#00000050" }}>by</Text>{" "}
+            {book?.volumeInfo?.authors?.join(", ")}
+          </ThemedText>
+
+          <View
+            style={{
+              flexDirection: "row",
+              marginVertical: 10,
+            }}
+          >
+            {book?.saleInfo?.buyLink && (
+              <Button
+                color={GenericColors.purple}
+                title="Purchase"
+                onPress={() => {
+                  if (book?.saleInfo?.buyLink) {
+                    window.open(book.saleInfo.buyLink, "_blank");
+                  }
+                }}
+              />
+            )}
+            <Button
+              color={GenericColors.blue}
+              onPress={handleAddToReadingGroupPress}
+              svg={
+                isReadingGroup ? (
+                  <BookmarkSolidSvg
+                    color={GenericColors.blue}
+                    height={24}
+                    width={24}
+                  />
+                ) : (
+                  <BookmarkOutlineSvg
+                    color={GenericColors.blue}
+                    height={24}
+                    width={24}
+                  />
+                )
+              }
+            />
+            <Button
+              color={GenericColors.green}
+              onPress={handleWishlistPress}
+              svg={
+                isWishlist ? (
+                  <StarSolidSvg
+                    color={GenericColors.green}
+                    height={24}
+                    width={24}
+                  />
+                ) : (
+                  <StarOutlineSvg
+                    color={GenericColors.green}
+                    height={24}
+                    width={24}
+                  />
+                )
+              }
             />
           </View>
-        )}
-      </ThemedView>
-    </ScrollView>
+
+          {book?.volumeInfo.description && (
+            <View
+              style={{
+                marginHorizontal: 20,
+                marginBottom: 10,
+                maxWidth: 400,
+                alignSelf: "center",
+              }}
+            >
+              <ThemedText
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  textAlign: "left",
+                  marginBottom: 10,
+                  fontFamily: "Avenir",
+                }}
+              >
+                About
+              </ThemedText>
+              <RenderHtml
+                defaultTextProps={{
+                  style: {
+                    fontSize: 16,
+                    fontFamily: "Open Sans",
+                    color,
+                  },
+                }}
+                contentWidth={width}
+                source={sourceDescription}
+              />
+            </View>
+          )}
+        </ThemedView>
+      </ThemedScrollView>
+    </ThemedSafeAreaView>
   );
 };
 

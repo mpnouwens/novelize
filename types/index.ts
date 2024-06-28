@@ -70,7 +70,7 @@ export type Book = {
 };
 
 export type SavedBook = {
-  ISBN: string;
+  id: string;
   title: string;
   authors: string;
   coverImage: string;

@@ -2,8 +2,11 @@ import {
   ActivityIndicator,
   Dimensions,
   FlatList,
+  Keyboard,
+  KeyboardAvoidingView,
   Platform,
   Text,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { GenericColors, colorSlugs } from "@/constants/Colors";
@@ -13,13 +16,12 @@ import { router, useLocalSearchParams } from "expo-router";
 import { BookOutlineSvg } from "@/assets/svgs/BookOutlineSvg";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { HEADER_HEIGHT } from "@/constants";
 import HomeSvg from "@/assets/svgs/HomeSvg";
 import { SearchBar } from "@/components/SearchBar";
 import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
 import { fetchSearchResults } from "@/utils/fetchResults";
 import { getNumColumns } from "@/utils/getNumColumns";
-import { useDatabase } from "@/context/DatabaseContext";
+import { useDatabase } from "@/hooks/useDatabase";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useNavigation } from "@react-navigation/native";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -31,6 +33,9 @@ export default function Search() {
   const backgroundColor = useThemeColor({}, colorSlugs.background);
 
   const navigation = useNavigation();
+  const [searchBarState, setSearchBarState] = useState<"opened" | "closed">(
+    "closed"
+  );
 
   useEffect(() => {
     navigation.setOptions({
@@ -38,28 +43,73 @@ export default function Search() {
         borderBottomWidth: 0,
         elevation: 0,
         shadowOpacity: 0,
-        height: HEADER_HEIGHT,
+        height: 70,
         backgroundColor,
       },
-      headerLeft: () => (
-        <Button
-          color={GenericColors.orange}
-          onPress={() => router.replace("/")}
-          svg={<HomeSvg height={24} width={24} color={GenericColors.orange} />}
-        />
-      ),
-      headerTitle: () => <SearchBar defaultValue={search?.toString()} />,
-      headerRight: () => (
-        <Button
-          color={GenericColors.pink}
-          onPress={() => router.replace("/mybooks")}
-          svg={
-            <BookOutlineSvg height={24} width={24} color={GenericColors.pink} />
-          }
-        />
+      header: () => (
+        <ThemedSafeAreaView>
+          <View
+            style={{
+              height: 70,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            {searchBarState === "closed" && (
+              <Button
+                color={GenericColors.orange}
+                onPress={() => router.replace("/")}
+                svg={
+                  <HomeSvg
+                    height={24}
+                    width={24}
+                    color={GenericColors.orange}
+                  />
+                }
+              />
+            )}
+            {Platform.OS === "web" ? (
+              <SearchBar defaultValue={search?.toString()} />
+            ) : (
+              <TouchableWithoutFeedback
+                onPress={Keyboard.dismiss}
+                accessible={false}
+              >
+                <KeyboardAvoidingView
+                  behavior={Platform.OS === "ios" ? "padding" : "height"}
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <SearchBar
+                    defaultValue={search?.toString()}
+                    header
+                    onStateChange={setSearchBarState}
+                  />
+                </KeyboardAvoidingView>
+              </TouchableWithoutFeedback>
+            )}
+            {searchBarState === "closed" && (
+              <Button
+                color={GenericColors.pink}
+                onPress={() => router.replace("/mybooks")}
+                svg={
+                  <BookOutlineSvg
+                    height={24}
+                    width={24}
+                    color={GenericColors.pink}
+                  />
+                }
+              />
+            )}
+          </View>
+        </ThemedSafeAreaView>
       ),
     });
-  });
+  }, [backgroundColor, navigation, search, searchBarState]);
 
   useEffect(() => {
     const updateColumns = () => {
