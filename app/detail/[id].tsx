@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   Image,
   Platform,
+  StyleSheet,
   Text,
   View,
   useWindowDimensions,
@@ -16,6 +17,7 @@ import { Book } from "@/types";
 import { BookmarkOutlineSvg } from "@/assets/svgs/BookmarkOutlineSvg";
 import { BookmarkSolidSvg } from "@/assets/svgs/BookmarkSolidSvg";
 import { Button } from "@/components/Button";
+import { MaturityRating } from "@/constants";
 import RenderHtml from "react-native-render-html";
 import { StarOutlineSvg } from "@/assets/svgs/StarOutlineSvg";
 import { StarSolidSvg } from "@/assets/svgs/StarSolidSvg";
@@ -24,6 +26,8 @@ import { ThemedScrollView } from "@/components/ThemedScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { fetchSingleBook } from "@/utils/fetchSingleBook";
+import { formatDate } from "@/utils/formatDate";
+import { getReadableMaturityRating } from "@/utils/getReadableMaturityRating";
 import { useDatabase } from "@/hooks/useDatabase";
 import { useQuery } from "@tanstack/react-query";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -32,7 +36,6 @@ const Detail = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { width } = useWindowDimensions();
-
   const color = useThemeColor({}, colorSlugs.text);
 
   const {
@@ -113,26 +116,16 @@ const Detail = () => {
 
   if (isLoading)
     return (
-      <ThemedView
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-      >
-        <ActivityIndicator size="large" />
+      <ThemedView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={GenericColors.blue} />
       </ThemedView>
     );
+
   if (error)
     return (
-      <ThemedView
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-      >
+      <ThemedView style={styles.errorContainer}>
         <Text>An error occurred</Text>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            width: "50%",
-            marginTop: 10,
-          }}
-        >
+        <View style={styles.errorActions}>
           <Button
             color={GenericColors.blue}
             onPress={refetch}
@@ -159,55 +152,40 @@ const Detail = () => {
   };
 
   return (
-    <ThemedSafeAreaView
-      style={{
-        flex: 1,
-      }}
-    >
+    <ThemedSafeAreaView style={styles.container}>
       <ThemedScrollView>
-        <ThemedView
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            paddingVertical: 20,
-          }}
-        >
-          <Image
-            source={{ uri: imageUri }}
-            style={{ height: 400, width: 300, borderRadius: 15 }}
-          />
-          <ThemedText
-            style={{
-              marginTop: 10,
-              fontSize: Platform.OS === "web" ? 30 : 20,
-              fontWeight: "bold",
-              textAlign: "center",
-              marginVertical: 10,
-              fontFamily: "Avenir",
-            }}
-          >
+        <ThemedView style={styles.contentContainer}>
+          <View style={styles.imageContainer}>
+            <Image source={{ uri: imageUri }} style={styles.bookImage} />
+            {book?.volumeInfo.averageRating && (
+              <View style={styles.ratingPill}>
+                <Text style={styles.ratingText}>
+                  {book?.volumeInfo.averageRating} ⭐
+                </Text>
+              </View>
+            )}
+          </View>
+
+          <ThemedText style={styles.bookTitle}>
             {book?.volumeInfo?.title}
           </ThemedText>
-          <ThemedText
-            style={{
-              textAlign: "center",
-              marginBottom: 5,
-              fontFamily: "Open Sans",
-              fontSize: 20,
-              maxWidth: 300,
-            }}
-          >
-            <Text style={{ color: `${GenericColors.black}50` }}>by</Text>{" "}
+          <ThemedText style={styles.bookAuthors}>
+            <Text style={styles.byText}>by</Text>{" "}
             {book?.volumeInfo?.authors?.join(", ")}
           </ThemedText>
+          <ThemedText style={styles.bookPublisher}>
+            {book?.volumeInfo?.publisher},{" "}
+            {formatDate(book?.volumeInfo?.publishedDate)}
+          </ThemedText>
+          <View style={styles.bookMaturityContainer}>
+            <ThemedText style={styles.bookMaturity}>
+              {getReadableMaturityRating(
+                book?.volumeInfo.maturityRating as MaturityRating
+              )}
+            </ThemedText>
+          </View>
 
-          <View
-            style={{
-              flexDirection: "row",
-              marginVertical: 10,
-            }}
-          >
+          <View style={styles.buttonRow}>
             {book?.saleInfo?.buyLink && (
               <Button
                 color={GenericColors.purple}
@@ -260,25 +238,8 @@ const Detail = () => {
           </View>
 
           {book?.volumeInfo.description && (
-            <View
-              style={{
-                marginHorizontal: 20,
-                marginBottom: 10,
-                maxWidth: 400,
-                alignSelf: "center",
-              }}
-            >
-              <ThemedText
-                style={{
-                  fontSize: 20,
-                  fontWeight: "bold",
-                  textAlign: "left",
-                  marginBottom: 10,
-                  fontFamily: "Avenir",
-                }}
-              >
-                About
-              </ThemedText>
+            <View style={styles.descriptionContainer}>
+              <ThemedText style={styles.aboutHeader}>About</ThemedText>
               <RenderHtml
                 defaultTextProps={{
                   style: {
@@ -297,5 +258,112 @@ const Detail = () => {
     </ThemedSafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  imageContainer: {
+    position: "relative",
+  },
+  bookImage: {
+    width: 300,
+    height: 400,
+    borderRadius: 15,
+  },
+  ratingPill: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    borderRadius: 15,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+  ratingText: {
+    color: GenericColors.white,
+    fontSize: 14,
+  },
+  container: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "50%",
+    marginTop: 10,
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 20,
+  },
+  bookTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginVertical: 10,
+  },
+  bookAuthors: {
+    fontSize: 18,
+    textAlign: "center",
+    marginVertical: 5,
+  },
+  byText: {
+    fontStyle: "italic",
+  },
+  bookPublisher: {
+    fontSize: 16,
+    textAlign: "center",
+    marginVertical: 5,
+  },
+  bookMaturityContainer: {
+    backgroundColor: GenericColors.grey,
+    borderRadius: 20, // More pronounced pill shape
+    paddingHorizontal: 12, // Wider for a better pill effect
+    paddingVertical: 3, // Reduced to make the pill sleeker
+    marginVertical: 10, // Adjusted for better spacing
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4, // For Android shadow
+  },
+
+  bookMaturity: {
+    color: GenericColors.white,
+    fontSize: 14, // Slightly smaller for a better fit
+    fontWeight: "bold", // Make text stand out
+    textAlign: "center",
+  },
+  buttonRow: {
+    flexDirection: "row",
+    marginVertical: 10,
+  },
+  descriptionContainer: {
+    marginHorizontal: 20,
+    marginBottom: 10,
+    maxWidth: 400,
+    alignSelf: "center",
+  },
+  aboutHeader: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "left",
+    marginBottom: 10,
+    fontFamily: "Avenir",
+  },
+});
 
 export default Detail;
