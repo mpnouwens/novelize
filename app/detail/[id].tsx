@@ -3,6 +3,7 @@ import * as Linking from "expo-linking";
 import {
   ActivityIndicator,
   Image,
+  Platform,
   StyleSheet,
   Text,
   View,
@@ -244,7 +245,8 @@ const Detail = () => {
                 )
               }
             />
-            <CreateAssistantAudio book={book} />
+            {/* WIP: Mobile */}
+            {Platform.OS === "web" && <CreateAssistantAudio book={book} />}
           </View>
 
           {book?.volumeInfo.description && (
