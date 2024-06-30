@@ -75,3 +75,11 @@ export type SavedBook = {
   authors: string;
   coverImage: string;
 };
+
+export type AudioFile = {
+  id: string;
+  counter: string;
+  date: Date;
+  url: string;
+  coverImage: string;
+};

@@ -40,3 +40,7 @@ app-example
 
 # Local Netlify folder
 .netlify
+
+# mp3
+*.mp3
+recordings/

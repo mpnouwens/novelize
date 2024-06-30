@@ -16,6 +16,7 @@ import { Book } from "@/types";
 import { BookmarkOutlineSvg } from "@/assets/svgs/BookmarkOutlineSvg";
 import { BookmarkSolidSvg } from "@/assets/svgs/BookmarkSolidSvg";
 import { Button } from "@/components/Button";
+import CreateAssistantAudio from "@/components/createAssistantAudio";
 import { MaturityRating } from "@/constants";
 import RenderHtml from "react-native-render-html";
 import { StarOutlineSvg } from "@/assets/svgs/StarOutlineSvg";
@@ -36,6 +37,7 @@ const Detail = () => {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const color = useThemeColor({}, colorSlugs.text);
+  const emptyBackground = useThemeColor({}, colorSlugs.emptyBackground);
 
   const {
     addWishList,
@@ -140,12 +142,6 @@ const Detail = () => {
       </ThemedView>
     );
 
-  const imageUri =
-    book?.volumeInfo?.imageLinks?.large ||
-    book?.volumeInfo?.imageLinks?.medium ||
-    book?.volumeInfo?.imageLinks?.thumbnail ||
-    "https://via.placeholder.com/150";
-
   const sourceDescription = {
     html: book?.volumeInfo.description || "",
   };
@@ -155,7 +151,14 @@ const Detail = () => {
       <ThemedScrollView>
         <ThemedView style={styles.contentContainer}>
           <View style={styles.imageContainer}>
-            <Image source={{ uri: imageUri }} style={styles.bookImage} />
+            <Image
+              source={{
+                uri: book?.volumeInfo?.imageLinks?.thumbnail
+                  ? `${book.volumeInfo.imageLinks.thumbnail}&fife=w900-h1200`
+                  : "https://via.placeholder.com/150",
+              }}
+              style={styles.bookImage}
+            />
             {book?.volumeInfo.averageRating && (
               <View style={styles.ratingPill}>
                 <Text style={styles.ratingText}>
@@ -176,7 +179,14 @@ const Detail = () => {
             {book?.volumeInfo?.publisher},{" "}
             {formatDate(book?.volumeInfo?.publishedDate)}
           </ThemedText>
-          <View style={styles.bookMaturityContainer}>
+          <View
+            style={[
+              styles.bookMaturityContainer,
+              {
+                backgroundColor: emptyBackground,
+              },
+            ]}
+          >
             <ThemedText style={styles.bookMaturity}>
               {getReadableMaturityRating(
                 book?.volumeInfo.maturityRating as MaturityRating
@@ -234,6 +244,7 @@ const Detail = () => {
                 )
               }
             />
+            <CreateAssistantAudio book={book} />
           </View>
 
           {book?.volumeInfo.description && (
@@ -325,25 +336,23 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   bookMaturityContainer: {
-    backgroundColor: GenericColors.grey,
-    borderRadius: 20, // More pronounced pill shape
-    paddingHorizontal: 12, // Wider for a better pill effect
-    paddingVertical: 3, // Reduced to make the pill sleeker
-    marginVertical: 10, // Adjusted for better spacing
-    shadowColor: "#000",
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+    marginVertical: 10,
+    shadowColor: GenericColors.black,
     shadowOffset: {
       width: 0,
       height: 2,
     },
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
-    elevation: 4, // For Android shadow
+    elevation: 4,
   },
-
   bookMaturity: {
     color: GenericColors.white,
-    fontSize: 14, // Slightly smaller for a better fit
-    fontWeight: "bold", // Make text stand out
+    fontSize: 14,
+    fontWeight: "bold",
     textAlign: "center",
   },
   buttonRow: {

@@ -76,7 +76,7 @@ export const DatabaseProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const addReadingGroup = async (book: SavedBook) => {
-    const exists = wishLists.some((g) => g.id === book.id);
+    const exists = readingGroup.some((g) => g.id === book.id);
     if (!exists) {
       const newReadingGroup = [...readingGroup, book];
       setReadingGroup(newReadingGroup);
@@ -87,8 +87,8 @@ export const DatabaseProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
-  const removeReadingGroup = async (bookId: string) => {
-    const newReadingGroup = readingGroup.filter((book) => book.id !== bookId);
+  const removeReadingGroup = async (id: string) => {
+    const newReadingGroup = readingGroup.filter((book) => book.id !== id);
     setReadingGroup(newReadingGroup);
     await AsyncStorage.setItem(
       READING_GROUP_STORAGE_KEY,
@@ -99,6 +99,7 @@ export const DatabaseProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const getReadingGroup = async () => {
     return readingGroup;
   };
+
   return (
     <DatabaseContext.Provider
       value={{

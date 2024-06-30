@@ -1,4 +1,9 @@
-import { Pressable, StyleProp, ViewStyle } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 import React, { FC } from "react";
 
 import { ThemedText } from "./ThemedText";
@@ -12,9 +17,17 @@ interface ButtonProps {
   type?: "text" | "icon";
   svg?: JSX.Element;
   style?: StyleProp<ViewStyle>;
+  isLoading?: boolean;
 }
 
-const Button: FC<ButtonProps> = ({ onPress, title, color, svg, style }) => {
+const Button: FC<ButtonProps> = ({
+  onPress,
+  title,
+  color,
+  svg,
+  style,
+  isLoading,
+}) => {
   const type = svg ? "icon" : "text";
   const backgroundColor = useThemeColor({}, colorSlugs.emptyBackground);
 
@@ -38,6 +51,14 @@ const Button: FC<ButtonProps> = ({ onPress, title, color, svg, style }) => {
         style,
       ]}
     >
+      {isLoading && (
+        <ActivityIndicator
+          color={color}
+          style={{
+            marginHorizontal: 10,
+          }}
+        />
+      )}
       {type === "text" && title && (
         <ThemedText
           style={{

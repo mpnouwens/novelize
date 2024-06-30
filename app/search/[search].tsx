@@ -218,7 +218,9 @@ export default function Search() {
           <View
             style={{
               flex: 1 / numColumns,
+              justifyContent: "center",
               alignItems: Platform.OS === "web" ? "center" : undefined,
+              padding: 10,
             }}
           >
             <Card book={item} />
