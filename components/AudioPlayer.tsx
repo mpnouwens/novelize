@@ -9,7 +9,7 @@ import {
 import React, { FC } from "react";
 
 import { GenericColors } from "@/constants/Colors";
-import { useAudio } from "@/context/AudioContext";
+import { useAudio } from "@/hooks/useAudio";
 
 const AudioPlayer: FC = () => {
   const { selectedAudio, bookDetails, isPlaying, playAudio, pauseAudio } =

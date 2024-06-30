@@ -13,7 +13,7 @@ import { GenericColors } from "@/constants/Colors";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
 import { fetchGeneratedAudioFiles } from "@/utils/fetchGeneratedAudioFiles";
-import { useAudio } from "@/context/AudioContext";
+import { useAudio } from "@/hooks/useAudio";
 
 interface CreateAssistantAudioProps {
   book: Book | undefined;
@@ -31,7 +31,6 @@ const CreateAssistantAudio: FC<CreateAssistantAudioProps> = ({ book }) => {
           ? createAssistantAudio(book.id, assistantMessage)
           : Promise.reject("Book ID is undefined"),
       onSuccess: (file) => {
-        console.log("New file created successfully:", file.name, file.url);
         queryClient.invalidateQueries({
           queryKey: ["fetchGeneratedAudioFiles"],
         });
@@ -69,6 +68,7 @@ const CreateAssistantAudio: FC<CreateAssistantAudioProps> = ({ book }) => {
     data: audios,
   } = useQuery<AudioFile[]>(fetchGeneratedAudioContent);
 
+  // WIP: Adding loading and updated UI
   console.log({
     isLoadingAudios,
     errorAudios,
@@ -107,7 +107,7 @@ const CreateAssistantAudio: FC<CreateAssistantAudioProps> = ({ book }) => {
         {audios && audios?.length > 0 && (
           <Collapsible title="Generated Audio Files">
             {audios.map((audio) => (
-              <ThemedView key={`${audio.id}-${audio.counter}`}>
+              <ThemedView key={`${audio.name}`}>
                 <Pressable
                   onPress={() => handleSelectAudio(audio)}
                   style={{
@@ -116,7 +116,7 @@ const CreateAssistantAudio: FC<CreateAssistantAudioProps> = ({ book }) => {
                     margin: 5,
                   }}
                 >
-                  <ThemedText>{audio.id}</ThemedText>
+                  <ThemedText>{audio.name}</ThemedText>
                 </Pressable>
               </ThemedView>
             ))}

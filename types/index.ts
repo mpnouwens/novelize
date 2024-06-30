@@ -77,9 +77,7 @@ export type SavedBook = {
 };
 
 export type AudioFile = {
-  id: string;
-  counter: string;
-  date: Date;
+  name: string;
+  created_at: Date;
   url: string;
-  coverImage: string;
 };

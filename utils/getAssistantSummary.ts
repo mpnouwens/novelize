@@ -23,8 +23,6 @@ export const getAssistantSummary = async (book: Book | undefined) => {
       : "No Description",
   };
 
-  console.log("data", data);
-
   try {
     const response = await axios.post(
       Platform.OS === "web"
@@ -32,8 +30,6 @@ export const getAssistantSummary = async (book: Book | undefined) => {
         : `https://novelize.netlify.app/chat/api/${book.id}`,
       data
     );
-
-    console.log("response", response);
 
     return response.data;
   } catch (error) {

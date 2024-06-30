@@ -1,12 +1,5 @@
 import { AudioFile, Book } from "@/types";
-// context/AudioContext.tsx
-import React, {
-  ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { ReactNode, createContext, useEffect, useState } from "react";
 
 import { Audio } from "expo-av";
 
@@ -19,7 +12,9 @@ interface AudioContextType {
   setBookDetails: (book: Book) => void;
 }
 
-const AudioContext = createContext<AudioContextType | undefined>(undefined);
+export const AudioContext = createContext<AudioContextType | undefined>(
+  undefined
+);
 
 export const AudioProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -74,12 +69,4 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({
       {children}
     </AudioContext.Provider>
   );
-};
-
-export const useAudio = () => {
-  const context = useContext(AudioContext);
-  if (!context) {
-    throw new Error("useAudio must be used within an AudioProvider");
-  }
-  return context;
 };

@@ -1,6 +1,5 @@
 import OpenAI from "openai";
-import fs from "fs";
-import path from "path";
+import { supabase } from "@/supabase";
 
 const openai = new OpenAI({
   apiKey: process.env.EXPO_OPENAI_API_KEY,
@@ -11,40 +10,47 @@ export async function GET(
   { bookId }: Record<string, string>
 ) {
   try {
-    const baseUrl = new URL(request.url).origin;
-    const recordingsDir = path.join(process.cwd(), "recordings");
-    const files = await fs.promises.readdir(recordingsDir);
-    const matchedFiles = files.filter((file) => file.startsWith(bookId));
+    const { data: files, error } = await supabase.storage
+      .from("audios")
+      .list("", {
+        limit: 100,
+        offset: 0,
+        search: bookId,
+      });
 
-    if (matchedFiles.length === 0) {
+    if (error) {
+      throw new Error(`Failed to list files: ${error.message}`);
+    }
+
+    if (!files || files.length === 0) {
       return new Response(JSON.stringify([]), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    const response = await Promise.all(
-      matchedFiles.map(async (file) => {
-        const filePath = path.join(recordingsDir, file);
-        const parts = file.split("-");
-        const counter = parts[1].replace(".mp3", "");
-        const date = fs.statSync(filePath).mtime;
-        const url = `${baseUrl}/recordings/${file}`;
+    const audioFiles = await Promise.all(
+      files.map(async (file) => {
+        const { name, updated_at } = file;
+        const { data } = await supabase.storage
+          .from("audios")
+          .getPublicUrl(name);
 
         return {
-          id: bookId,
-          counter,
-          date,
-          url,
+          name,
+          created_at: updated_at,
+          url: data.publicUrl,
         };
       })
     );
 
-    return new Response(JSON.stringify(response), {
+    return new Response(JSON.stringify(audioFiles), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+    console.error("Error:", error);
+
     return new Response(JSON.stringify({ error: error }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
@@ -63,12 +69,8 @@ export async function POST(
       throw new Error("Message is required");
     }
 
-    await fs.promises.mkdir("recordings", { recursive: true });
-
-    const files = await fs.promises.readdir("recordings");
-    const prevFiles = files.filter((file) => file.includes(`${bookId}`));
-
-    const speechFile = `recordings/${bookId}-${prevFiles.length + 1}.mp3`;
+    const timestamp = new Date().getTime();
+    const speechFile = `${bookId}+${timestamp}.mp3`;
 
     const mp3 = await openai.audio.speech.create({
       model: "tts-1",
@@ -78,7 +80,15 @@ export async function POST(
 
     const buffer = Buffer.from(await mp3.arrayBuffer());
 
-    await fs.promises.writeFile(speechFile, buffer);
+    const { data: upload, error: uploadError } = await supabase.storage
+      .from("audios")
+      .upload(speechFile, buffer, {
+        contentType: "audio/mpeg",
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    console.log({ upload, uploadError });
 
     return new Response(
       JSON.stringify({ message: "File created successfully" }),
