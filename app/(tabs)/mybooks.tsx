@@ -55,14 +55,14 @@ export default function Books() {
   // Filter out books without an ID only
   // - reason being that there were some books that were saved without an ID
   const wishListWithIds = wishList.filter((book) => book.id);
-  const readingGroupWithIds = readingGroup.filter((book) => book.id);
+  const readingGroupWithIds = wishListWithIds.filter((book) => book.id);
 
   return (
     <ThemedSafeAreaView style={{ flex: 1 }}>
       <ThemedScrollView style={{ flex: 1 }}>
-        {wishList.length > 0 || readingGroup.length > 0 ? (
+        {wishListWithIds.length > 0 || readingGroupWithIds.length > 0 ? (
           <ThemedView style={styles.container}>
-            {wishList.length > 0 && (
+            {wishListWithIds.length > 0 && (
               <>
                 <ThemedText style={styles.header}>Wishlist</ThemedText>
                 <FlatList
@@ -77,7 +77,7 @@ export default function Books() {
                 />
               </>
             )}
-            {readingGroup.length > 0 && (
+            {readingGroupWithIds.length > 0 && (
               <>
                 <ThemedText style={styles.header}>Reading Group</ThemedText>
                 <FlatList
