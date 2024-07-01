@@ -1,4 +1,4 @@
-import { Image, Platform, Pressable, StyleProp, ViewStyle } from "react-native";
+import { Image, Pressable, StyleProp, ViewStyle } from "react-native";
 
 import { GenericColors } from "@/constants/Colors";
 import React from "react";
@@ -10,11 +10,6 @@ interface ImageCardProps {
 }
 
 const ImageCard: React.FC<ImageCardProps> = ({ imageUri, onPress, style }) => {
-  const imageSize = Platform.select({
-    web: { width: 200, height: 300 },
-    default: { width: 150, height: 250 },
-  });
-
   return (
     <Pressable
       onPress={onPress}
@@ -44,8 +39,9 @@ const ImageCard: React.FC<ImageCardProps> = ({ imageUri, onPress, style }) => {
         style={[
           {
             resizeMode: "stretch",
+            width: 150,
+            height: 250,
           },
-          imageSize,
         ]}
       />
     </Pressable>
