@@ -13,6 +13,7 @@ import { GenericColors, colorSlugs } from "@/constants/Colors";
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
+import { ArrowSvg } from "@/assets/svgs/ArrowSvg";
 import { Book } from "@/types";
 import { BookmarkOutlineSvg } from "@/assets/svgs/BookmarkOutlineSvg";
 import { BookmarkSolidSvg } from "@/assets/svgs/BookmarkSolidSvg";
@@ -30,6 +31,7 @@ import { fetchSingleBook } from "@/utils/fetchSingleBook";
 import { formatDate } from "@/utils/formatDate";
 import { getReadableMaturityRating } from "@/utils/getReadableMaturityRating";
 import { useDatabase } from "@/hooks/useDatabase";
+import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
@@ -39,6 +41,9 @@ const Detail = () => {
   const { width } = useWindowDimensions();
   const color = useThemeColor({}, colorSlugs.text);
   const emptyBackground = useThemeColor({}, colorSlugs.emptyBackground);
+  const backgroundColor = useThemeColor({}, colorSlugs.background);
+
+  const navigation = useNavigation();
 
   const {
     addWishList,
@@ -51,6 +56,38 @@ const Detail = () => {
 
   const [isWishlist, setIsWishlist] = useState(false);
   const [isReadingGroup, setIsReadingGroup] = useState(false);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerStyle: {
+        borderBottomWidth: 0,
+        elevation: 0,
+        shadowOpacity: 0,
+        height: 80,
+        backgroundColor,
+      },
+      header: () => (
+        <ThemedSafeAreaView>
+          <View
+            style={{
+              height: 70,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Button
+              svg={
+                <ArrowSvg height={24} width={24} color={GenericColors.blue} />
+              }
+              onPress={() => router.back()}
+              color={GenericColors.blue}
+            />
+          </View>
+        </ThemedSafeAreaView>
+      ),
+    });
+  }, [backgroundColor, navigation, router]);
 
   useEffect(() => {
     const checkStatuses = async () => {
