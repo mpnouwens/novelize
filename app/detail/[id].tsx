@@ -58,12 +58,13 @@ const Detail = () => {
   const [isReadingGroup, setIsReadingGroup] = useState(false);
 
   useEffect(() => {
+    const canGoBack = router.canGoBack();
     navigation.setOptions({
+      headerShown: canGoBack,
       headerStyle: {
         borderBottomWidth: 0,
         elevation: 0,
         shadowOpacity: 0,
-        height: 80,
         backgroundColor,
       },
       header: () => (
