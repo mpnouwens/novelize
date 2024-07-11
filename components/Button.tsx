@@ -47,6 +47,7 @@ const Button: FC<ButtonProps> = ({
           alignItems: "center",
           height: svg && 60,
           width: svg && 60,
+          maxHeight: 60,
         },
         style,
       ]}

@@ -83,7 +83,7 @@ const SearchBar: FC<SearchBarProps> = ({
       if (Keyboard) Keyboard.dismiss();
 
       router.navigate({
-        pathname: "/search/[search]",
+        pathname: "/(tabs)/(discover)/search/[search]",
         params: {
           search: trimmedSearchQuery,
         },

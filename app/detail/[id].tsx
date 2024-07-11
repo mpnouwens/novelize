@@ -3,7 +3,6 @@ import * as Linking from "expo-linking";
 import {
   ActivityIndicator,
   Image,
-  Platform,
   StyleSheet,
   Text,
   View,
@@ -188,7 +187,7 @@ const Detail = () => {
   return (
     <ThemedSafeAreaView style={styles.container}>
       <ThemedScrollView>
-        <ThemedView style={styles.contentContainer}>
+        <View style={styles.contentContainer}>
           <View style={styles.imageContainer}>
             <Image
               source={{
@@ -283,8 +282,7 @@ const Detail = () => {
                 )
               }
             />
-            {/* WIP: Mobile */}
-            {Platform.OS === "web" && <CreateAssistantAudio book={book} />}
+            <CreateAssistantAudio book={book} />
           </View>
 
           {book?.volumeInfo.description && (
@@ -303,7 +301,7 @@ const Detail = () => {
               />
             </View>
           )}
-        </ThemedView>
+        </View>
       </ThemedScrollView>
     </ThemedSafeAreaView>
   );

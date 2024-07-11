@@ -12,7 +12,7 @@ import React from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import appConfig from "../../app.json";
+import appConfig from "../../../app.json";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function Home() {

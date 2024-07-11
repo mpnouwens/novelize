@@ -10,6 +10,7 @@ interface AudioContextType {
   playAudio: (audio: AudioFile) => Promise<void>;
   pauseAudio: () => Promise<void>;
   setBookDetails: (book: Book) => void;
+  closeAudio: () => void;
 }
 
 export const AudioContext = createContext<AudioContextType | undefined>(
@@ -55,6 +56,15 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  const closeAudio = () => {
+    if (sound) {
+      sound.unloadAsync();
+      setSound(null);
+      setIsPlaying(false);
+      setSelectedAudio(null);
+    }
+  };
+
   return (
     <AudioContext.Provider
       value={{
@@ -64,6 +74,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({
         playAudio,
         pauseAudio,
         setBookDetails,
+        closeAudio,
       }}
     >
       {children}

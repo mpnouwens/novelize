@@ -55,7 +55,7 @@ export default function Books() {
   // Filter out books without an ID only
   // - reason being that there were some books that were saved without an ID
   const wishListWithIds = wishList.filter((book) => book.id);
-  const readingGroupWithIds = wishListWithIds.filter((book) => book.id);
+  const readingGroupWithIds = readingGroup.filter((book) => book.id);
 
   return (
     <ThemedSafeAreaView style={{ flex: 1 }}>

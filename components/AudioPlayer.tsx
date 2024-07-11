@@ -1,6 +1,7 @@
+import { GenericColors, colorSlugs } from "@/constants/Colors";
 import {
-  Dimensions,
   Image,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -8,43 +9,87 @@ import {
 } from "react-native";
 import React, { FC } from "react";
 
-import { GenericColors } from "@/constants/Colors";
 import { useAudio } from "@/hooks/useAudio";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 const AudioPlayer: FC = () => {
-  const { selectedAudio, bookDetails, isPlaying, playAudio, pauseAudio } =
-    useAudio();
+  const backgroundColor = useThemeColor({}, colorSlugs.background);
+
+  const {
+    selectedAudio,
+    bookDetails,
+    isPlaying,
+    playAudio,
+    pauseAudio,
+    closeAudio,
+  } = useAudio();
 
   if (!selectedAudio || !bookDetails) {
     return null;
   }
 
-  const isMobile = Dimensions.get("window").width < 768;
+  const isMobile = Platform.OS === "ios" || Platform.OS === "android";
 
   return (
     <View
       style={[
         styles.playerContainer,
         isMobile ? styles.mobilePlayer : styles.desktopPlayer,
+        {
+          backgroundColor: isMobile ? backgroundColor : "rgba(0, 0, 0, 0.7)",
+          borderColor: isMobile ? `${GenericColors.grey}50` : "transparent",
+          borderWidth: isMobile ? 1 : 0,
+          alignSelf: isMobile ? "center" : "flex-end",
+        },
       ]}
     >
       <Image
         source={{ uri: bookDetails.volumeInfo.imageLinks.thumbnail }}
-        style={styles.coverImage}
+        style={[
+          styles.coverImage,
+          {
+            width: isMobile ? 55 : 100,
+            height: isMobile ? 55 : 100,
+          },
+        ]}
       />
-      <Pressable
-        onPress={isPlaying ? pauseAudio : () => playAudio(selectedAudio)}
-        style={styles.playPauseButton}
+
+      <View
+        style={{
+          flexDirection: "row",
+        }}
       >
-        <Text style={styles.playPauseText}>{isPlaying ? "Pause" : "Play"}</Text>
-      </Pressable>
+        <Pressable
+          onPress={closeAudio}
+          style={[
+            styles.stopButton,
+            {
+              marginTop: isMobile ? 0 : 10,
+            },
+          ]}
+        >
+          <Text style={styles.stopText}>Close</Text>
+        </Pressable>
+        <Pressable
+          onPress={isPlaying ? pauseAudio : () => playAudio(selectedAudio)}
+          style={[
+            styles.playPauseButton,
+            {
+              marginTop: isMobile ? 0 : 10,
+            },
+          ]}
+        >
+          <Text style={styles.playPauseText}>
+            {isPlaying ? "Pause" : "Play"}
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   playerContainer: {
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
     borderRadius: 10,
     padding: 10,
     alignItems: "center",
@@ -55,16 +100,16 @@ const styles = StyleSheet.create({
     right: 10,
   },
   mobilePlayer: {
+    height: 65,
     position: "absolute",
-    bottom: 0,
-    width: "100%",
+    top: "6.5%",
+    width: "60%",
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 20,
+    borderRadius: 50,
   },
   coverImage: {
-    width: 100,
-    height: 100,
     borderRadius: 10,
   },
   playPauseButton: {
@@ -72,8 +117,20 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: GenericColors.pink,
     borderRadius: 10,
+    minHeight: 40,
   },
   playPauseText: {
+    color: GenericColors.white,
+    fontSize: 16,
+  },
+  stopButton: {
+    padding: 10,
+    backgroundColor: GenericColors.red,
+    borderRadius: 10,
+    marginRight: 10,
+    minHeight: 40,
+  },
+  stopText: {
     color: GenericColors.white,
     fontSize: 16,
   },

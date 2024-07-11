@@ -13,10 +13,8 @@ import { GenericColors, colorSlugs } from "@/constants/Colors";
 import React, { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 
-import { BookOutlineSvg } from "@/assets/svgs/BookOutlineSvg";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import HomeSvg from "@/assets/svgs/HomeSvg";
 import { SearchBar } from "@/components/SearchBar";
 import { ThemedSafeAreaView } from "@/components/ThemedSafeAreaView";
 import { fetchSearchResults } from "@/utils/fetchResults";
@@ -50,23 +48,10 @@ export default function Search() {
             style={{
               height: 70,
               flexDirection: "row",
-              justifyContent: "space-between",
               alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            {searchBarState === "closed" && (
-              <Button
-                color={GenericColors.orange}
-                onPress={() => router.replace("/")}
-                svg={
-                  <HomeSvg
-                    height={24}
-                    width={24}
-                    color={GenericColors.orange}
-                  />
-                }
-              />
-            )}
             {Platform.OS === "web" ? (
               <SearchBar defaultValue={search?.toString()} />
             ) : (
@@ -89,19 +74,6 @@ export default function Search() {
                   />
                 </KeyboardAvoidingView>
               </TouchableWithoutFeedback>
-            )}
-            {searchBarState === "closed" && (
-              <Button
-                color={GenericColors.pink}
-                onPress={() => router.replace("/mybooks")}
-                svg={
-                  <BookOutlineSvg
-                    height={24}
-                    width={24}
-                    color={GenericColors.pink}
-                  />
-                }
-              />
             )}
           </View>
         </ThemedSafeAreaView>

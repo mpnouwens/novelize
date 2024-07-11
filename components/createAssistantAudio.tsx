@@ -93,36 +93,33 @@ const CreateAssistantAudio: FC<CreateAssistantAudioProps> = ({ book }) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <View style={{ flex: 1, flexDirection: "row" }}>
-        <Button
-          color={GenericColors.pink}
-          onPress={handleGetSummary}
-          title="Ask AI"
-          isLoading={
-            createAudioFileStatus === "pending" ||
-            getSummaryStatus === "pending"
-          }
-        />
-        {audios && audios?.length > 0 && (
-          <Collapsible title="Generated Audio Files">
-            {audios.map((audio) => (
-              <ThemedView key={`${audio.name}`}>
-                <Pressable
-                  onPress={() => handleSelectAudio(audio)}
-                  style={{
-                    padding: 10,
-                    backgroundColor: GenericColors.grey,
-                    margin: 5,
-                  }}
-                >
-                  <ThemedText>{audio.name}</ThemedText>
-                </Pressable>
-              </ThemedView>
-            ))}
-          </Collapsible>
-        )}
-      </View>
+    <View style={{ flexDirection: "row" }}>
+      <Button
+        color={GenericColors.pink}
+        onPress={handleGetSummary}
+        title="Ask AI"
+        isLoading={
+          createAudioFileStatus === "pending" || getSummaryStatus === "pending"
+        }
+      />
+      {audios && audios?.length > 0 && (
+        <Collapsible title="Generated Audio Files">
+          {audios.map((audio) => (
+            <ThemedView key={`${audio.name}`}>
+              <Pressable
+                onPress={() => handleSelectAudio(audio)}
+                style={{
+                  padding: 10,
+                  backgroundColor: GenericColors.grey,
+                  margin: 5,
+                }}
+              >
+                <ThemedText>{audio.name}</ThemedText>
+              </Pressable>
+            </ThemedView>
+          ))}
+        </Collapsible>
+      )}
     </View>
   );
 };
